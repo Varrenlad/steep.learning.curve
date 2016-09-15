@@ -3,6 +3,7 @@
 #include <windowsx.h>
 #include <stdio.h>
 #include <conio.h>
+#define INPUT_FILE "input.txt"
 
 HDC hdc;
 RECT rt;
@@ -21,19 +22,24 @@ struct colour {
 };
 
 void draw_contour(trapeze t, HPEN hContourPen) {
-
 	POINT ppt[5] = { {t.A[0], t.A[1]},{ t.B[0], t.B[1] },
 	{ t.C[0], t.C[1] },{ t.D[0], t.D[1] },{ t.A[0], t.A[1] } };
-	Polyline(hdc, ppt, 5);
+	Polygon(hdc, ppt, 4);
 }
 
-void draw_filled(trapeze t, HBRUSH hTrapezeBrush) {
-
+void draw_filled(trapeze t, COLORREF colour) {
+	HPEN hTransparentPen SelectPen(hdc, NULL_PEN);
+	draw_contour(t, hTransparentPen);
+	FloodFill(hdc, t.A[0], t.C[1], colour);
 }
 
-void draw_partfilled(trapeze outer, trapeze inner, HPEN hContourPen,
-					 HBRUSH hTrapezeBrush, colour cBGColour) {
-
+void draw_partfilled(trapeze outer, trapeze inner,
+			COLORREF colour, COLORREF cBGColour) {
+	HPEN hTransparentPen SelectPen(hdc, NULL_PEN);
+	draw_contour(outer, hTransparentPen);
+	FloodFill(hdc, outer.A[0], outer.C[1], colour);
+	draw_contour(inner, hTransparentPen);
+	FloodFill(hdc, inner.A[0], inner.C[1], colour);
 }
 
 int validate_trapeze(trapeze t) {
@@ -65,31 +71,76 @@ int validate_colour(colour c) {
 		return 0;
 }
 
-//For contoured
-int validate_input(trapeze t, HPEN hContourPen, colour cBGColour) {
-	if (!validate_trapeze(t))
-		return 0;
-}
-
-//For filled
-int validate_input(trapeze t, HBRUSH hTrapezeBrush, colour cBGColour) {
-	if (!validate_trapeze(t))
-		return 0;
-	if (!validate_colour(cBGColour))
+//For contoured and filled
+int validate_input(trapeze t, colour cBGColour, colour cTrapezeColour) {
+	if (!validate_trapeze(t) || !validate_colour(cBGColour) || !validate_colour(cTrapezeColour))
 		return 0;
 }
  
 //For cut
-int validate_input(trapeze outer, trapeze inner, HPEN hContourPen,
-HBRUSH hTrapezeBrush, colour cBGColour) {
-	if (!validate_trapeze(outer))
-		return 0;
-	if (!validate_trapeze(inner))
-		return 0;
-	if (!validate_colour(cBGColour))
+int validate_input(trapeze outer, trapeze inner, colour cTrapezeColour, colour cBGColour) {
+	if (!validate_trapeze(outer) || !validate_trapeze(inner) ||
+		!validate_colour(cBGColour) || !validate_colour(cTrapezeColour))
 		return 0;
 }
 
+int get_type(FILE *fp) {
+	int i, j;
+	fscanf(fp, "%d", i);
+	return i;
+}
+
+void get_data(trapeze t, colour cTrapezeColour, colour cBGColour) {
+
+}
+
+void get_data(trapeze outer, trapeze inner, colour cTrapezeColour, colour cBGColour) {
+
+}
+
+int main() {
+	FILE *fp = fopen(INPUT_FILE, "r");
+	HWND hwnd = GetConsoleWindow();
+	hdc = GetDC(hwnd);
+	switch (get_type(fp)) {
+	case 3:
+		trapeze outer;
+		trapeze inner;
+		colour cOuterColour;
+		colour cBGColour;
+		get_data(outer, inner, cOuterColour, cBGColour);
+		if (!validate_input(outer, inner, cOuterColour, cBGColour))
+			return 1;
+		while (getch() != 27)
+			draw_partfilled(outer, inner, RGB(cOuterColour.red, cOuterColour.green, cOuterColour.blue),
+				RGB(cBGColour.red, cBGColour.green, cBGColour.blue));
+		break;
+	case 2:
+		trapeze base;
+		colour cBGColour;
+		colour cTrapezeColour;
+		get_data(base, cTrapezeColour, cBGColour);
+		if (!validate_input(base, cBGColour, cTrapezeColour))
+			return 1;
+		while (getch() != 27)
+			draw_filled(base, RGB(cTrapezeColour.red, cTrapezeColour.green, cTrapezeColour.blue));
+		break;
+	default:
+		trapeze base;
+		colour cBGColour;
+		colour cTrapezeColour;
+		get_data(base, cTrapezeColour, cBGColour);
+		if (!validate_input(base, cBGColour, cTrapezeColour))
+			return 1;
+		HPEN hTrapezePen = 
+			CreatePen(PS_SOLID, 5, RGB(cTrapezeColour.red, cTrapezeColour.green, cTrapezeColour.blue));
+		while (getch() != 27)
+			draw_contour(base, hTrapezePen);
+		break;
+	}
+}
+
+/*
 void main()
 {
 	// получаем идентификатор окна
@@ -131,11 +182,7 @@ void main()
 		hOldBrush = SelectBrush(hdc, hFaceBrush);
 		Ellipse(hdc, rt.right / 2 - 20, 70, rt.right / 2 + 20, rt.bottom - 10);
 		
-	} while (getch() != 27); // при нажатии любой клавиши
-							 // (кроме Esc) перерисовываем изображение,
-							 // изображение изменится, если изменились размеры окна,
-							 // нажатие Esc – выход
-							 // выбираем в контекст отображения предыдущее перо
+	} while (getch() != 27);
 	SelectPen(hdc, hOldPen);
 	// выбираем в контекст отображения предыдущую кисть
 	SelectBrush(hdc, hOldBrush);
@@ -146,4 +193,4 @@ void main()
 	// освобождаем контекст отображения
 	ReleaseDC(hwnd, hdc);
 }
-
+*/
