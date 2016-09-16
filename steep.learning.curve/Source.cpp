@@ -1,141 +1,57 @@
-#pragma warning (disable : 4996)
-#include <windows.h>
-#include <windowsx.h>
-#include <stdio.h>
-#include <conio.h>
-#define INPUT_FILE "input.txt"
-
-HDC hdc;
-RECT rt;
-
-struct trapeze {
-	int A[2];
-	int B[2];
-	int C[2];
-	int D[2];
-};
-
-struct colour {
-	int red;
-	int green;
-	int blue;
-};
-
-void draw_contour(trapeze t, HPEN hContourPen) {
-	POINT ppt[5] = { {t.A[0], t.A[1]},{ t.B[0], t.B[1] },
-	{ t.C[0], t.C[1] },{ t.D[0], t.D[1] },{ t.A[0], t.A[1] } };
-	Polygon(hdc, ppt, 4);
-}
-
-void draw_filled(trapeze t, COLORREF colour) {
-	HPEN hTransparentPen SelectPen(hdc, NULL_PEN);
-	draw_contour(t, hTransparentPen);
-	FloodFill(hdc, t.A[0], t.C[1], colour);
-}
-
-void draw_partfilled(trapeze outer, trapeze inner,
-			COLORREF colour, COLORREF cBGColour) {
-	HPEN hTransparentPen SelectPen(hdc, NULL_PEN);
-	draw_contour(outer, hTransparentPen);
-	FloodFill(hdc, outer.A[0], outer.C[1], colour);
-	draw_contour(inner, hTransparentPen);
-	FloodFill(hdc, inner.A[0], inner.C[1], colour);
-}
-
-int validate_trapeze(trapeze t) {
-	if  (rt.right < t.A[0] || t.A[0] < 0)
-		return 0;
-	if  (rt.right < t.B[0] || t.B[0] < 0)
-		return 0;
-	if  (rt.right < t.C[0] || t.C[0] < 0)
-		return 0;
-	if  (rt.right < t.D[0] || t.D[0] < 0)
-		return 0;
-	if (rt.bottom < t.A[1] || t.A[1] < 0)
-		return 0;
-	if (rt.bottom < t.B[1] || t.B[1] < 0)
-		return 0;
-	if (rt.bottom < t.C[1] || t.C[1] < 0)
-		return 0;
-	if (rt.bottom < t.D[1] || t.D[1] < 0)
-		return 0;
-	return 1;
-}
-
-int validate_colour(colour c) {
-	if (c.blue < 0  || c.blue > 255)
-		return 0;
-	if (c.green < 0 || c.green > 255)
-		return 0;
-	if (c.red < 0   || c.red > 255)
-		return 0;
-}
-
-//For contoured and filled
-int validate_input(trapeze t, colour cBGColour, colour cTrapezeColour) {
-	if (!validate_trapeze(t) || !validate_colour(cBGColour) || !validate_colour(cTrapezeColour))
-		return 0;
-}
- 
-//For cut
-int validate_input(trapeze outer, trapeze inner, colour cTrapezeColour, colour cBGColour) {
-	if (!validate_trapeze(outer) || !validate_trapeze(inner) ||
-		!validate_colour(cBGColour) || !validate_colour(cTrapezeColour))
-		return 0;
-}
-
-int get_type(FILE *fp) {
-	int i, j;
-	fscanf(fp, "%d", i);
-	return i;
-}
-
-void get_data(trapeze t, colour cTrapezeColour, colour cBGColour) {
-
-}
-
-void get_data(trapeze outer, trapeze inner, colour cTrapezeColour, colour cBGColour) {
-
-}
+#include "the_include.h"
 
 int main() {
+	int draw_type;
+	HDC hdc;
+	RECT rt;
+	trapeze *base = new trapeze;
+	trapeze *outer = new trapeze;
+	trapeze *inner = new trapeze;
+	colour *cBGColour = new colour;
+	colour *cTrapezeColour = new colour;
+	colour *cOuterColour = new colour;
 	FILE *fp = fopen(INPUT_FILE, "r");
 	HWND hwnd = GetConsoleWindow();
+	HBRUSH hBackgroundBrush;
 	hdc = GetDC(hwnd);
-	switch (get_type(fp)) {
+	draw_type = get_type(fp);
+	GetClientRect(hwnd, &rt);
+	switch (draw_type) {
 	case 3:
-		trapeze outer;
-		trapeze inner;
-		colour cOuterColour;
-		colour cBGColour;
-		get_data(outer, inner, cOuterColour, cBGColour);
-		if (!validate_input(outer, inner, cOuterColour, cBGColour))
+		get_data(fp, outer, inner, cOuterColour, cBGColour);
+		if (!validate_input(*outer, *inner, *cOuterColour, *cBGColour, rt))
 			return 1;
-		while (getch() != 27)
-			draw_partfilled(outer, inner, RGB(cOuterColour.red, cOuterColour.green, cOuterColour.blue),
-				RGB(cBGColour.red, cBGColour.green, cBGColour.blue));
+		SetBkColor(hdc, RGB(cBGColour->red, cBGColour->green, cBGColour->blue));
+		while (getch() != 27) {
+			GetClientRect(hwnd, &rt);
+			draw_partfilled(*outer, *inner, RGB(cOuterColour->red, cOuterColour->green, cOuterColour->blue),
+				RGB(cBGColour->red, cBGColour->green, cBGColour->blue), hdc);
+		}
 		break;
 	case 2:
-		trapeze base;
-		colour cBGColour;
-		colour cTrapezeColour;
-		get_data(base, cTrapezeColour, cBGColour);
-		if (!validate_input(base, cBGColour, cTrapezeColour))
+		get_data(fp, base, cTrapezeColour, cBGColour);
+		if (!validate_input(*base, *cBGColour, *cTrapezeColour, rt))
 			return 1;
-		while (getch() != 27)
-			draw_filled(base, RGB(cTrapezeColour.red, cTrapezeColour.green, cTrapezeColour.blue));
+		SetBkColor(hdc, RGB(cBGColour->red, cBGColour->green, cBGColour->blue));
+		while (getch() != 27) {
+			draw_filled(*base, RGB(cTrapezeColour->red, cTrapezeColour->green, cTrapezeColour->blue), hdc);
+			GetClientRect(hwnd, &rt);
+		}
 		break;
 	default:
-		trapeze base;
-		colour cBGColour;
-		colour cTrapezeColour;
-		get_data(base, cTrapezeColour, cBGColour);
-		if (!validate_input(base, cBGColour, cTrapezeColour))
+		get_data(fp, base, cTrapezeColour, cBGColour);
+		if (!validate_input(*base, *cBGColour, *cTrapezeColour, rt))
 			return 1;
-		HPEN hTrapezePen = 
-			CreatePen(PS_SOLID, 5, RGB(cTrapezeColour.red, cTrapezeColour.green, cTrapezeColour.blue));
-		while (getch() != 27)
-			draw_contour(base, hTrapezePen);
+		SetBkMode(hdc, OPAQUE);
+		HPEN hTrapezePen =
+			CreatePen(PS_SOLID, 5, RGB(cTrapezeColour->red, cTrapezeColour->green, cTrapezeColour->blue));
+		hBackgroundBrush = CreateSolidBrush(RGB(cBGColour->red, cBGColour->green, cBGColour->blue));
+		do {
+			GetClientRect(hwnd, &rt);
+			SelectBrush(hdc, hBackgroundBrush);
+			Rectangle(hdc, rt.left - 5, rt.top - 5, rt.right + 5, rt.bottom + 5); //awful dirty hack not to see contour of rectangle
+			draw_contour(*base, hTrapezePen, hdc);
+		} while (getch() != 27);
 		break;
 	}
 }
