@@ -10,6 +10,7 @@ void draw_contour(trapeze t, HPEN hContourPen, HDC hdc) {
 	{ t.C[0], t.C[1] },{ t.D[0], t.D[1] },{ t.A[0], t.A[1] } };
 	SelectPen(hdc, hContourPen);
 	Polyline(hdc, ppt, 5);
+	DeletePen(hContourPen);
 }
 
 void draw_filled(trapeze t, COLORREF colour, HDC hdc) {
@@ -18,6 +19,7 @@ void draw_filled(trapeze t, COLORREF colour, HDC hdc) {
 	HBRUSH hFillBrush = CreateSolidBrush(colour);
 	SelectBrush(hdc, hFillBrush);
 	Polygon(hdc, ppt, 4);
+	DeleteBrush(hFillBrush);
 }
 
 void draw_partfilled(trapeze outer, trapeze inner, COLORREF colour,
