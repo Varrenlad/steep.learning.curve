@@ -1,9 +1,9 @@
 #pragma once
 #include "the_include.h"
-void draw_contour(trapeze t, HPEN hContourPen, HDC hdc);
-void draw_filled(trapeze t, COLORREF colour, HDC hdc);
-void draw_partfilled(trapeze outer, trapeze inner,
-				COLORREF colour, COLORREF cBGColour, HDC hdc);
+void draw_contour(trapeze, HPEN, HDC);
+void draw_filled(trapeze, COLORREF, HDC);
+void draw_partfilled(trapeze, trapeze,
+				COLORREF, COLORREF, HDC);
 
 void draw_contour(trapeze t, HPEN hContourPen, HDC hdc) {
 				POINT ppt[5] = { { t.A[0], t.A[1] },{ t.B[0], t.B[1] },

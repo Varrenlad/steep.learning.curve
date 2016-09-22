@@ -1,9 +1,9 @@
 #include "the_include.h"
-int cont_proc(FILE *fp, HWND hwnd, HDC hdc);
-int fill_proc(FILE *fp, HWND hwnd, HDC hdc);
-int part_proc(FILE *fp, HWND hwnd, HDC hdc);
+int cont_proc(FILE *, HWND, HDC, int, int);
+int fill_proc(FILE *, HWND, HDC, int, int);
+int part_proc(FILE *, HWND, HDC, int, int);
 
-int cont_proc(FILE *fp, HWND hwnd, HDC hdc) {
+int cont_proc(FILE *fp, HWND hwnd, HDC hdc, int brush_type, int pen_type) {
 	trapeze *base = new trapeze;
 	colour *cBGColour = new colour;
 	colour *cTrapezeColour = new colour;
@@ -12,7 +12,7 @@ int cont_proc(FILE *fp, HWND hwnd, HDC hdc) {
 	get_data(fp, base, cTrapezeColour, cBGColour);
 	SetBkColor(hdc, RGB(cBGColour->red, cBGColour->green, cBGColour->blue));
 	SetBkMode(hdc, OPAQUE);
-	HPEN hTrapezePen = CreatePen(PS_SOLID, 5, RGB(cTrapezeColour->red, cTrapezeColour->green, 
+	HPEN hTrapezePen = CreatePen(pen_type, 5, RGB(cTrapezeColour->red, cTrapezeColour->green, 
 					cTrapezeColour->blue));
 	hBackgroundBrush = CreateSolidBrush(RGB(cBGColour->red, cBGColour->green, cBGColour->blue));
 	do {
@@ -30,13 +30,13 @@ int cont_proc(FILE *fp, HWND hwnd, HDC hdc) {
 	return 0;
 }
 
-int fill_proc(FILE *fp, HWND hwnd, HDC hdc) {
+int fill_proc(FILE *fp, HWND hwnd, HDC hdc, int brush_type, int pen_type) {
 	trapeze *base = new trapeze;
 	colour *cBGColour = new colour;
 	colour *cTrapezeColour = new colour;
 	HBRUSH hBackgroundBrush;
 	RECT rt;
-	HPEN pen = CreatePen(PS_NULL, 0, RGB(0, 0, 0));
+	HPEN pen = CreatePen(pen_type, 0, RGB(0, 0, 0));
 	SelectPen(hdc, pen);
 	get_data(fp, base, cTrapezeColour, cBGColour);
 	SetBkColor(hdc, RGB(cBGColour->red, cBGColour->green, cBGColour->blue));
@@ -55,14 +55,14 @@ int fill_proc(FILE *fp, HWND hwnd, HDC hdc) {
 	return 0;
 }
 
-int part_proc(FILE *fp, HWND hwnd, HDC hdc) {
+int part_proc(FILE *fp, HWND hwnd, HDC hdc, int brush_type, int pen_type) {
 	trapeze *outer = new trapeze;
 	trapeze *inner = new trapeze;
 	colour *cBGColour = new colour;
 	colour *cOuterColour = new colour;
 	HBRUSH hBackgroundBrush;
 	RECT rt;
-	HPEN pen = CreatePen(PS_NULL, 0, RGB(0, 0, 0));
+	HPEN pen = CreatePen(pen_type, 0, RGB(0, 0, 0));
 	SelectPen(hdc, pen);
 	get_data(fp, outer, inner, cOuterColour, cBGColour);
 	SetBkColor(hdc, RGB(cBGColour->red, cBGColour->green, cBGColour->blue));
@@ -83,23 +83,25 @@ int part_proc(FILE *fp, HWND hwnd, HDC hdc) {
 }
 
 int main() {
-	int draw_type;
+	int draw_type, brush_type, pen_type;
 	FILE *fp = fopen(INPUT_FILE, "r");
 	HWND hwnd = GetConsoleWindow();
 	HDC hdc = GetDC(hwnd);
-	draw_type = get_type(fp);
-	switch (draw_type) {
-	case 3:
-		part_proc(fp, hwnd, hdc);
-		break;
-	case 2:
-		fill_proc(fp, hwnd, hdc);
-		break;
-	case 1:
-		cont_proc(fp, hwnd, hdc);
-		break;
-	default:
-		return 1;
+	get_types(fp, &draw_type, &brush_type, &pen_type);
+	if (validate_types(draw_type, brush_type, pen_type)) {
+		switch (draw_type) {
+		case 3:
+			part_proc(fp, hwnd, hdc);
+			break;
+		case 2:
+			fill_proc(fp, hwnd, hdc);
+			break;
+		case 1:
+			cont_proc(fp, hwnd, hdc);
+			break;
+		default:
+			return 1;
+		}
 	}
 	return 0;
 }
