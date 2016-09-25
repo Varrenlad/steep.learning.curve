@@ -1,34 +1,56 @@
 #pragma once
 #include "the_include.h"
 void draw_contour(trapeze, HPEN, HDC);
-void draw_filled(trapeze, COLORREF, HDC);
-void draw_partfilled(trapeze, trapeze,
-				COLORREF, COLORREF, HDC);
+void draw_filled(trapeze, HPEN, HBRUSH, HDC);
+void draw_partfilled(trapeze, trapeze, HPEN,
+				HPEN, HBRUSH, HBRUSH, HDC);
+int size_check(trapeze t, RECT rt, HDC hdc);
+HBRUSH CreateBrush(colour, int);
 
-void draw_contour(trapeze t, HPEN hContourPen, HDC hdc) {
-				POINT ppt[5] = { { t.A[0], t.A[1] },{ t.B[0], t.B[1] },
+void draw_contour(trapeze t, HPEN hPen, HDC hdc) {
+	POINT ppt[5] = { { t.A[0], t.A[1] },{ t.B[0], t.B[1] },
 	{ t.C[0], t.C[1] },{ t.D[0], t.D[1] },{ t.A[0], t.A[1] } };
-	SelectPen(hdc, hContourPen);
+	SelectPen(hdc, hPen);
 	Polyline(hdc, ppt, 5);
-	DeletePen(hContourPen);
+	DeletePen(hPen);
 }
 
-void draw_filled(trapeze t, COLORREF colour, HDC hdc) {
-				POINT ppt[4] = { { t.A[0], t.A[1] },{ t.B[0], t.B[1] },
-	{ t.C[0], t.C[1] },{ t.D[0], t.D[1] } };
-	HBRUSH hFillBrush = CreateSolidBrush(colour);
-	SelectBrush(hdc, hFillBrush);
+void draw_filled(trapeze t, HPEN hPen, HBRUSH hBrush, HDC hdc) {
+	POINT ppt[4] = { { t.A[0], t.A[1] },{ t.B[0], t.B[1] },
+	               { t.C[0], t.C[1] },{ t.D[0], t.D[1] } };
+	SelectPen(hdc, hPen);
+	SelectBrush(hdc, hBrush);
 	Polygon(hdc, ppt, 4);
-	DeleteBrush(hFillBrush);
+	DeletePen(hPen);
+	DeleteBrush(hBrush);
 }
 
-void draw_partfilled(trapeze outer, trapeze inner, COLORREF colour,
-				COLORREF cBGColour, HDC hdc) {
-	draw_filled(outer, colour, hdc);
-	draw_filled(inner, cBGColour, hdc);
+void draw_partfilled(trapeze outer, trapeze inner, HPEN hIn,
+				HPEN hOutP, HBRUSH hOutB, HBRUSH hBG, HDC hdc) {
+	draw_filled(outer, hOutP, hOutB, hdc);
+	draw_filled(inner, hIn, hBG, hdc);
 }
-	//HPEN hTransparentPen SelectPen(hdc, NULL_PEN);
-	//draw_contour(outer, hTransparentPen, hdc);
-	//FloodFill(hdc, outer.A[0], outer.C[1], colour);
-	//draw_contour(inner, hTransparentPen, hdc);
-	//FloodFill(hdc, inner.A[0], inner.C[1], colour);
+	
+int size_check(trapeze t, RECT rt, HDC hdc) {
+	if (rt.right < t.A[0]  || t.A[0] < 0 ||
+		rt.right < t.B[0]  || t.B[0] < 0 ||
+		rt.right < t.C[0]  || t.C[0] < 0 ||
+		rt.right < t.D[0]  || t.D[0] < 0 ||
+		rt.bottom < t.A[1] || t.A[1] < 0 ||
+		rt.bottom < t.B[1] || t.B[1] < 0 ||
+		rt.bottom < t.C[1] || t.C[1] < 0 ||
+		rt.bottom < t.D[1] || t.D[1] < 0) {
+		TextOutA(hdc, 10, 10, "Window size is too small", 25);
+		return 0;
+	}
+	return 1;
+}
+
+HBRUSH CreateBrush(colour cBrush, int type) {
+	HBRUSH *retval = new HBRUSH;
+	if (!type)
+		*retval = CreateSolidBrush(RGB(cBrush.red, cBrush.green, cBrush.blue));
+	else
+		*retval = CreateHatchBrush(type, RGB(cBrush.red, cBrush.green, cBrush.blue));
+	return *retval;
+}

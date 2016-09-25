@@ -1,27 +1,29 @@
 #include "the_include.h"
-int cont_proc(FILE *, HWND, HDC, int, int);
-int fill_proc(FILE *, HWND, HDC, int, int);
-int part_proc(FILE *, HWND, HDC, int, int);
+int cont_proc(FILE *, HWND, HDC);
+int fill_proc(FILE *, HWND, HDC);
+int part_proc(FILE *, HWND, HDC);
 
-int cont_proc(FILE *fp, HWND hwnd, HDC hdc, int brush_type, int pen_type) {
+int cont_proc(FILE *fp, HWND hwnd, HDC hdc) {
+	int pen_type;
 	trapeze *base = new trapeze;
-	colour *cBGColour = new colour;
-	colour *cTrapezeColour = new colour;
+	colour *cBG = new colour;
+	colour *cTrapeze = new colour;
 	HBRUSH hBackgroundBrush;
 	RECT rt;
-	get_data(fp, base, cTrapezeColour, cBGColour);
-	SetBkColor(hdc, RGB(cBGColour->red, cBGColour->green, cBGColour->blue));
+	pen_type = get_type(fp);
+	if (get_data(fp, base, cTrapeze, cBG))
+		return 2;
+	SetBkColor(hdc, RGB(255 - cBG->red, 255 - cBG->green, 255 - cBG->blue));
 	SetBkMode(hdc, OPAQUE);
-	HPEN hTrapezePen = CreatePen(pen_type, 5, RGB(cTrapezeColour->red, cTrapezeColour->green, 
-					cTrapezeColour->blue));
-	hBackgroundBrush = CreateSolidBrush(RGB(cBGColour->red, cBGColour->green, cBGColour->blue));
+	HPEN hTrapezePen = CreatePen(pen_type, 5, RGB(cTrapeze->red, cTrapeze->green,
+		cTrapeze->blue));
+	hBackgroundBrush = CreateSolidBrush(RGB(cBG->red, cBG->green, cBG->blue));
 	do {
 		GetClientRect(hwnd, &rt);
-		if (validate_input(*base, *cBGColour, *cTrapezeColour, rt))
-			return 1;
 		SelectBrush(hdc, hBackgroundBrush);
 		Rectangle(hdc, rt.left - 5, rt.top - 5, rt.right + 5, rt.bottom + 5);
-		//awful dirty hack not to see contour of rectangle
+		if (size_check(*base, rt, hdc))
+			continue;
 		draw_contour(*base, hTrapezePen, hdc);
 	} while (getch() != 27);
 	DeletePen(hTrapezePen);
@@ -30,53 +32,70 @@ int cont_proc(FILE *fp, HWND hwnd, HDC hdc, int brush_type, int pen_type) {
 	return 0;
 }
 
-int fill_proc(FILE *fp, HWND hwnd, HDC hdc, int brush_type, int pen_type) {
+int fill_proc(FILE *fp, HWND hwnd, HDC hdc) {
+	int pen_type;
+	int brush_type;
 	trapeze *base = new trapeze;
-	colour *cBGColour = new colour;
-	colour *cTrapezeColour = new colour;
-	HBRUSH hBackgroundBrush;
+	colour *cBG = new colour;
+	colour *cTrapeze = new colour;
+	colour *cTrapezePen = new colour;
 	RECT rt;
-	HPEN pen = CreatePen(pen_type, 0, RGB(0, 0, 0));
-	SelectPen(hdc, pen);
-	get_data(fp, base, cTrapezeColour, cBGColour);
-	SetBkColor(hdc, RGB(cBGColour->red, cBGColour->green, cBGColour->blue));
-	hBackgroundBrush = CreateSolidBrush(RGB(cBGColour->red, cBGColour->green, cBGColour->blue));
+	pen_type = get_type(fp);
+	brush_type = get_type(fp);
+	if (get_data(fp, base, cTrapezePen, cBG, cTrapeze))
+		return 2;
+	HPEN hTrapezePen = CreatePen(pen_type, 5, RGB(cTrapeze->red, cTrapeze->green,
+		cTrapeze->blue));
+	HBRUSH hTrapezeBrush = CreateBrush(*cTrapeze, brush_type);
+	SetBkColor(hdc, RGB(255 - cBG->red, 255 - cBG->green, 255 - cBG->blue));
+	HBRUSH hBackgroundBrush = CreateSolidBrush(RGB(cBG->red, cBG->green, cBG->blue));
 	do {
 		GetClientRect(hwnd, &rt);
-		if (validate_input(*base, *cBGColour, *cTrapezeColour, rt))
-			return 1;
 		SelectBrush(hdc, hBackgroundBrush);
 		Rectangle(hdc, rt.left - 5, rt.top - 5, rt.right + 5, rt.bottom + 5);
-		//awful dirty hack not to see contour of rectangle
-		draw_filled(*base, RGB(cTrapezeColour->red, cTrapezeColour->green, cTrapezeColour->blue), hdc);
+		if (size_check(*base, rt, hdc))
+			continue;
+		if (validate_input(*base, *cBG, *cTrapeze))
+			return 1;
+		draw_filled(*base, hTrapezePen, hTrapezeBrush, hdc);
 	} while (getch() != 27);
+	DeletePen(hTrapezePen);
 	DeleteBrush(hBackgroundBrush);
 	ReleaseDC(hwnd, hdc);
 	return 0;
 }
 
-int part_proc(FILE *fp, HWND hwnd, HDC hdc, int brush_type, int pen_type) {
+int part_proc(FILE *fp, HWND hwnd, HDC hdc) {
+	int pen_type_in, pen_type_out;
+	int brush_type;
 	trapeze *outer = new trapeze;
 	trapeze *inner = new trapeze;
-	colour *cBGColour = new colour;
-	colour *cOuterColour = new colour;
-	HBRUSH hBackgroundBrush;
+	colour *cBG = new colour;
+	colour *cOuter = new colour;
+	colour *cPenIn = new colour;
+	colour *cPenOut = new colour;
 	RECT rt;
-	HPEN pen = CreatePen(pen_type, 0, RGB(0, 0, 0));
-	SelectPen(hdc, pen);
-	get_data(fp, outer, inner, cOuterColour, cBGColour);
-	SetBkColor(hdc, RGB(cBGColour->red, cBGColour->green, cBGColour->blue));
-	hBackgroundBrush = CreateSolidBrush(RGB(cBGColour->red, cBGColour->green, cBGColour->blue));
+	pen_type_in = get_type(fp);
+	pen_type_out = get_type(fp);
+	brush_type = get_type(fp);
+	if (get_data(fp, outer, inner, cBG, cOuter, cPenOut, cPenIn))
+		return 2;
+	HPEN hPenIn = CreatePen(pen_type_in, 0, RGB(cPenIn->red, cPenIn->green, cPenIn->blue));
+	HPEN hPenOut = CreatePen(pen_type_out, 0, RGB(cPenOut->red, cPenOut->green, cPenOut->blue));
+	HBRUSH hBackgroundBrush = CreateSolidBrush(RGB(cBG->red, cBG->green, cBG->blue));
+	HBRUSH hTrapezeBrush = CreateBrush(*cOuter, brush_type);
+	SetBkColor(hdc, RGB(255 - cBG->red, 255 - cBG->green, 255 - cBG->blue));
 	do {
 		GetClientRect(hwnd, &rt);
-		if (validate_input(*outer, *inner, *cOuterColour, *cBGColour, rt))
-			return 1;
 		SelectBrush(hdc, hBackgroundBrush);
 		Rectangle(hdc, rt.left - 5, rt.top - 5, rt.right + 5, rt.bottom + 5);
-		//awful dirty hack not to see contour of rectangle
-		draw_partfilled(*outer, *inner, RGB(cOuterColour->red, cOuterColour->green, cOuterColour->blue),
-						RGB(cBGColour->red, cBGColour->green, cBGColour->blue), hdc);
+		if (size_check(*outer, rt, hdc))
+			continue;
+		draw_partfilled(*outer, *inner, hPenIn, hPenOut, hTrapezeBrush, hBackgroundBrush, hdc);
 	} while (getch() != 27);
+	DeletePen(hPenIn);
+	DeletePen(hPenOut);
+	DeleteBrush(hTrapezeBrush);
 	DeleteBrush(hBackgroundBrush);
 	ReleaseDC(hwnd, hdc);
 	return 0;
@@ -87,8 +106,8 @@ int main() {
 	FILE *fp = fopen(INPUT_FILE, "r");
 	HWND hwnd = GetConsoleWindow();
 	HDC hdc = GetDC(hwnd);
-	get_types(fp, &draw_type, &brush_type, &pen_type);
-	if (validate_types(draw_type, brush_type, pen_type)) {
+	draw_type = get_type(fp);
+	if (validate_type(draw_type)) {
 		switch (draw_type) {
 		case 3:
 			part_proc(fp, hwnd, hdc);
