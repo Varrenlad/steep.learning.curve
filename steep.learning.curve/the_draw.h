@@ -12,7 +12,6 @@ void draw_contour(trapeze t, HPEN hPen, HDC hdc) {
 	{ t.C[0], t.C[1] },{ t.D[0], t.D[1] },{ t.A[0], t.A[1] } };
 	SelectPen(hdc, hPen);
 	Polyline(hdc, ppt, 5);
-	DeletePen(hPen);
 }
 
 void draw_filled(trapeze t, HPEN hPen, HBRUSH hBrush, HDC hdc) {
@@ -21,8 +20,6 @@ void draw_filled(trapeze t, HPEN hPen, HBRUSH hBrush, HDC hdc) {
 	SelectPen(hdc, hPen);
 	SelectBrush(hdc, hBrush);
 	Polygon(hdc, ppt, 4);
-	DeletePen(hPen);
-	DeleteBrush(hBrush);
 }
 
 void draw_partfilled(trapeze outer, trapeze inner, HPEN hIn,
@@ -41,9 +38,9 @@ int size_check(trapeze t, RECT rt, HDC hdc) {
 		rt.bottom < t.C[1] || t.C[1] < 0 ||
 		rt.bottom < t.D[1] || t.D[1] < 0) {
 		TextOutA(hdc, 10, 10, "Window size is too small", 25);
-		return 0;
+		return 1;
 	}
-	return 1;
+	return 0;
 }
 
 HBRUSH CreateBrush(colour cBrush, int type) {

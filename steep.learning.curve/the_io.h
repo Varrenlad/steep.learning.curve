@@ -79,8 +79,8 @@ int validate_input(trapeze outer, trapeze inner, colour cTrapeze,
 
 int validate_type(int type) {
 	if (type > 7 || type < 0)
-		return 1;
-	return 0;
+		return 0;
+	return 1;
 }
 
 void get_colour(FILE *fp, colour *cModify) {
