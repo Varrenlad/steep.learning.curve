@@ -5,6 +5,11 @@
 //#define INPUT_FILE "input_cont.txt"
 #define INPUT_FILE "input_fill.txt"
 
+struct point {
+	int x;
+	int y;
+};
+
 struct trapeze {
 	int A[2];
 	int B[2];
