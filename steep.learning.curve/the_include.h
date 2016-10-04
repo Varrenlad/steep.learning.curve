@@ -1,9 +1,9 @@
 #pragma once
 #pragma warning (disable : 4996)
 
-//#define INPUT_FILE "input_both.txt"
+#define INPUT_FILE "input_both.txt"
 //#define INPUT_FILE "input_cont.txt"
-#define INPUT_FILE "input_fill.txt"
+//#define INPUT_FILE "input_fill.txt"
 
 struct point {
 	int x;

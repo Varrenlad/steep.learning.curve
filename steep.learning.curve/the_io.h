@@ -2,6 +2,7 @@
 #include "the_include.h"
 int validate_trapeze(trapeze);
 int validate_trapeze(trapeze, trapeze);
+int validate_trapeze(trapeze, trapeze, HDC);
 int validate_colour(colour); 
 int validate_input(trapeze, colour, colour);
 int validate_input(trapeze, colour, colour, colour);
@@ -21,29 +22,14 @@ int validate_trapeze(trapeze t) {
 			((t.A[0] - t.B[0]) / (t.A[1] - t.B[1]))) //check if slopes are equal
 			return 1;
 	}
+	if (t.A[0] - t.B[0] < 5 || t.D[0] - t.C[0] < 5 ||
+		t.C[1] - t.A[1] < 5 || t.D[1] - t.B[1] < 5)
+		return 1;
 	if (t.B[0] < t.A[0] && t.C[0] > t.D[0] ||
 		t.B[0] > t.A[0] && t.C[0] < t.D[0]) //wrong placed x i
 		return 1;
 	//Sumfin else?
 	return 0;
-}
-
-
-//Barycentric chech much? We shall use it I think
-float sign(point p1, point p2, point p3)
-{
-	return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
-}
-
-bool PointInTriangle(point pt, point v1, point v2, point v3)
-{
-	bool b1, b2, b3;
-
-	b1 = sign(pt, v1, v2) < 0.0f;
-	b2 = sign(pt, v2, v3) < 0.0f;
-	b3 = sign(pt, v3, v1) < 0.0f;
-
-	return ((b1 == b2) && (b2 == b3));
 }
 
 int validate_trapeze(trapeze inner, trapeze outer) {
@@ -57,6 +43,22 @@ int validate_trapeze(trapeze inner, trapeze outer) {
 		inner.D[1] > outer.D[1])
 		return 1;
 	return 0;
+}
+
+int validate_trapeze(trapeze inner, trapeze outer, HDC hdc) {
+	int is_inside;
+	HPEN hTrapezePen = CreatePen(0, 0, RGB(255, 255, 255));
+	HBRUSH hTrapezeBrush = CreateSolidBrush(RGB(255, 255, 255));
+	draw_filled(outer, hTrapezePen, hTrapezeBrush, hdc);
+	if (RGB(255, 255, 255) == GetPixel(hdc, inner.A[0], inner.A[1]) &&
+		RGB(255, 255, 255) == GetPixel(hdc, inner.B[0], inner.B[1]) &&
+		RGB(255, 255, 255) == GetPixel(hdc, inner.C[0], inner.C[1]) &&
+		RGB(255, 255, 255) == GetPixel(hdc, inner.D[0], inner.D[1]))
+			is_inside = 1;
+	else is_inside = 0;
+	DeleteBrush(hTrapezeBrush);
+	DeletePen(hTrapezePen);
+	return is_inside;
 }
 
 int validate_colour(colour c) {

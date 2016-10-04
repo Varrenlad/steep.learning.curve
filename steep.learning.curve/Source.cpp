@@ -78,7 +78,8 @@ int part_proc(FILE *fp, HWND hwnd, HDC hdc) {
 	pen_type_in = get_type(fp);
 	pen_type_out = get_type(fp);
 	brush_type = get_type(fp);
-	if (get_data(fp, outer, inner, cBG, cOuter, cPenOut, cPenIn))
+	if (get_data(fp, outer, inner, cBG, cOuter, cPenOut, cPenIn) ||
+		!validate_trapeze(*inner, *outer, hdc))
 		return 2;
 	HPEN hPenIn = CreatePen(pen_type_in, 0, RGB(cPenIn->red, cPenIn->green, cPenIn->blue));
 	HPEN hPenOut = CreatePen(pen_type_out, 0, RGB(cPenOut->red, cPenOut->green, cPenOut->blue));
