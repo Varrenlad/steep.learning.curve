@@ -27,5 +27,6 @@ struct colour {
 #include <windowsx.h>
 #include <stdio.h>
 #include <conio.h>
+#include <iostream>
 #include "the_draw.h"
 #include "the_io.h"
