@@ -1,55 +1,117 @@
 #pragma once
 #include "the_include.h"
 
+///Abstract class for everything
 class Drawable {
+public:
+	Drawable(int input, HDC hdc_i) {
+		points = new POINT[input];
+		hdc = hdc_i;
+		count_of_p = input;
+		basePen = CreatePen(1, 1, RGB(0, 0, 0));
+	}
+	virtual void Draw() = 0;
+	virtual void Setter() = 0;
+	virtual void SetType() = 0;
+	void Move(int x, int y) {
+		int i;
+		for (i = 0; i < count_of_p; ++i) {
+			points[i].x += x;
+			points[i].y += y;
+		}
+	}
+	virtual void Getter(std::ostream str) {
+		int i;
+		for (i = 0; i < count_of_p; ++i)
+			str << points[i].x << " " << points[i].y << "\n";
+	}
+	~Drawable() {
+		delete[] points;
+		count_of_p = 0;
+	}
 protected:
-	int number_of_points;
-	HDC hdc_i;
+	POINT *points;
+	HDC hdc;
+	int count_of_p;
+	int type_of_task;
 	HPEN basePen;
 	HBRUSH baseBrush;
-public:
-	Drawable(int input, HDC &hdc) {
-		number_of_points = input;
-		points_of_figure = new POINT[input];
-		basePen = CreatePen(1, 0, RGB(0, 0, 0));
-		hdc_i = hdc;
-	}
-	virtual void draw(HPEN, POINT*, HDC, int);
-	virtual void draw(HPEN, HBRUSH, HDC, POINT*);
-	virtual void draw(HPEN, HPEN, HBRUSH, HBRUSH, HDC, POINT*);
-	virtual int *get_types(std::istream);
-	virtual POINT *load_data(std::istream, int);
-	virtual void load_colour(std::istream);
-	virtual void validate(colour, POINT*, int);
-	virtual void validate(colour, colour, POINT*, int);
-	virtual void validate(colour, colour, colour, colour, POINT*, int);
-private:
-	POINT *points_of_figure;
 };
 
 class Background : public Drawable {
 public:
-	Background(int input, HDC &hdc) : Drawable(input, hdc)
+	Background(HDC &hdc) : Drawable(2, hdc)
 	{};
-	void draw(int num, RECT rt) {
-		SelectPen(hdc_i, basePen);
-		SelectBrush(hdc_i, baseBrush);
-		Rectangle(hdc_i, rt.left - 10, rt.top - 10, rt.right + 10, rt.bottom + 10);
+	void Draw(HWND hwnd) {
+		Setter(hwnd);
+		SelectBrush(hdc, baseBrush);
+		Rectangle(hdc, points[0].x, points[0].y, points[1].x, points[1].y);
+		DeleteBrush(baseBrush);
 	}
-	void load_colour(std::istream iost) {
-		colour new_colour;
-		iost >> new_colour.red >> new_colour.green >> new_colour.blue;
-		if (new_colour.red > 255 || new_colour.green > 255 || new_colour.blue > 255)
-			throw EXCEPTION_READ_FAULT;
-		else {
-			baseColour = RGB(new_colour.red, new_colour.green, new_colour.blue);
-			baseBrush = CreateSolidBrush(baseColour);
+	void Setter(COLORREF col) {
+		baseBrush = CreateSolidBrush(col);
+	}
+	~Background(){ //not sure if it even starts ~Drawable
+		DeleteBrush(baseBrush);
+	};
+private:
+	void Setter(HWND hwnd) {
+		GetClientRect(hwnd, &rt);
+		points[0].x = rt.left - 10;
+		points[0].y = rt.top - 10;
+		points[1].x = rt.right + 10;
+		points[1].y = rt.bottom + 10;
+	}
+	RECT rt;
+};
+
+class ContourTrapezoid : public Drawable {
+public:
+	ContourTrapezoid(HDC &hdc) : Drawable(5, hdc)
+	{};
+	void Draw() {
+		SelectPen(hdc, basePen);
+		Polyline(hdc, points, 5);
+		DeletePen(basePen);
+	}
+	void Setter(POINT *p) { ///Four points, no less
+		int i;
+		for (i = 0; i < count_of_p; ++i) {
+			points[i] = p[i];
 		}
+		points[4] = p[0];
 	}
-	~Background() {
+	void SetPenType(int type) {
+		pen_type = type;
+	}
+private:
+	int pen_type = 0;
+	COLORREF pen;
+};
+
+class FilledTrapezoid : public Drawable {
+public:
+	FilledTrapezoid(HDC &hdc) : Drawable(4, hdc)
+	{};
+	void Draw() {
+		SelectPen(hdc, basePen);
+		SelectBrush(hdc, baseBrush);
+		Polygon(hdc, points, 4);
 		DeletePen(basePen);
 		DeleteBrush(baseBrush);
 	}
+	void Getter() {
+
+	}
+	void SetType(int type, int type_of_type) {
+		if (type_of_type)
+			pen_type = type;
+		else
+			brush_type = type;
+	}
 private:
-	COLORREF baseColour;
+	int pen_type = 0;
+	int brush_type = 0;
+	COLORREF pen;
+	COLORREF brush;
 };
