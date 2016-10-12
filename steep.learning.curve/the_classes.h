@@ -29,6 +29,7 @@ protected:
 	HDC hdc;
 	int count_of_p;
 	int type_of_task;
+	int pen_width;
 	HPEN basePen;
 	HBRUSH baseBrush;
 };
@@ -44,14 +45,25 @@ public:
 		Rectangle(hdc, points[0].x, points[0].y, points[1].x, points[1].y);
 		DeleteBrush(baseBrush);
 	}
-	void Setter(COLORREF col) {
-		bgc = col;
+	void Setter(std::ifstream &st) {
+		int red, green, blue;
+		st >> red >> green >> blue;
+		if (red < 0   || red > 255 ||
+			green < 0 || green > 255 ||
+			blue < 0  || blue > 255)
+			throw EXCEPTION_READ_FAULT;
+		else bgc = RGB(red, green, blue);
 	}
 	void Getter(std::ofstream &st) {
 		int i;
-		st << GetRValue(bgc) << " " << GetGValue(bgc) << " " << GetBValue(bgc) << "\n";
-		for (i = 0; i < count_of_p; ++i) {
-			st << points[i].x << " " << points[i].y << "\n";
+		try {
+			st << GetRValue(bgc) << " " << GetGValue(bgc) << " " << GetBValue(bgc) << "\n";
+			for (i = 0; i < count_of_p; ++i) {
+				st << points[i].x << " " << points[i].y << "\n";
+			}
+		}
+		catch (int e) {
+			throw EXCEPTION_NONCONTINUABLE;
 		}
 	}
 	~Background(){ //not sure if it even starts ~Drawable
@@ -80,14 +92,25 @@ public:
 	}
 	void Setter(std::ifstream &st) { ///Four points, no less
 		int i;
-		st >> pen_type;
-		for (i = 0; i < count_of_p; ++i) {
+		st >> pen_type >> pen_width;
+		for (i = 0; i < count_of_p - 1; ++i) {
 			st >> points[i].x >> points[i].y;
 		}
 		points[4] = points[0];
+		basePen = CreatePen(pen_type, pen_width, pen);
 	}
-	void SetPenType(int type) {
-		pen_type = type;
+	void Getter(std::ostream &st) {
+		int i;
+		try {
+			st << pen_type << "\n";
+			st << GetRValue(pen) << " " << GetGValue(pen) << " " << GetBValue(pen) << "\n";
+			for (i = 0; i < count_of_p - 1; ++i) {
+				st << points[i].x << " " << points[i].y << "\n";
+			}
+		}
+		catch (int e) {
+			throw;
+		}
 	}
 private:
 	int pen_type = 0;
@@ -106,10 +129,30 @@ public:
 		DeleteBrush(baseBrush);
 	}
 	void Setter(std::ifstream &st) { ///Four points, no less
-		int i;
-		st >> pen_type >> brush_type;
+		int i, r, g, b;
+		st >> pen_type >> pen_width >> brush_type;
+		st >> r >> g >> b;
+		pen = RGB(r, g, b);
+		st >> r >> g >> b;
+		brush = RGB(r, g, b);
 		for (i = 0; i < count_of_p; ++i) {
 			st >> points[i].x >> points[i].y;
+		}
+		basePen = CreatePen(pen_type, pen_width, pen);
+		baseBrush = CreateBrush(brush, brush_type);
+	}
+	void Getter(std::ostream &st) {
+		int i;
+		try {
+			st << pen_type << " " << brush_type << "\n";
+			st << GetRValue(pen) << " " << GetGValue(pen) << " " << GetBValue(pen) << "\n";
+			st << GetRValue(brush) << " " << GetGValue(brush) << " " << GetBValue(brush) << "\n";
+			for (i = 0; i < count_of_p - 1; ++i) {
+				st << points[i].x << " " << points[i].y << "\n";
+			}
+		}
+		catch (int e) {
+			throw;
 		}
 	}
 	void Draw(FilledTrapezoid &ft) {
@@ -125,12 +168,6 @@ public:
 	}
 	COLORREF GetBrushColour() {
 		return brush;
-	}
-	void SetType(int type, int type_of_type) {
-		if (type_of_type)
-			pen_type = type;
-		else
-			brush_type = type;
 	}
 private:
 	int pen_type = 0;
