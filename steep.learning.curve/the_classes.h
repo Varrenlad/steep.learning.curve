@@ -12,7 +12,6 @@ public:
 	}
 	virtual void Draw() = 0;
 	virtual void Setter() = 0;
-	virtual void SetType() = 0;
 	void Move(int x, int y) {
 		int i;
 		for (i = 0; i < count_of_p; ++i) {
@@ -20,11 +19,7 @@ public:
 			points[i].y += y;
 		}
 	}
-	virtual void Getter(std::ostream str) {
-		int i;
-		for (i = 0; i < count_of_p; ++i)
-			str << points[i].x << " " << points[i].y << "\n";
-	}
+	virtual void Getter() = 0;
 	~Drawable() {
 		delete[] points;
 		count_of_p = 0;
@@ -43,13 +38,21 @@ public:
 	Background(HDC &hdc) : Drawable(2, hdc)
 	{};
 	void Draw(HWND hwnd) {
+		baseBrush = CreateSolidBrush(bgc);
 		Setter(hwnd);
 		SelectBrush(hdc, baseBrush);
 		Rectangle(hdc, points[0].x, points[0].y, points[1].x, points[1].y);
 		DeleteBrush(baseBrush);
 	}
 	void Setter(COLORREF col) {
-		baseBrush = CreateSolidBrush(col);
+		bgc = col;
+	}
+	void Getter(std::ofstream &st) {
+		int i;
+		st << GetRValue(bgc) << " " << GetGValue(bgc) << " " << GetBValue(bgc) << "\n";
+		for (i = 0; i < count_of_p; ++i) {
+			st << points[i].x << " " << points[i].y << "\n";
+		}
 	}
 	~Background(){ //not sure if it even starts ~Drawable
 		DeleteBrush(baseBrush);
@@ -63,6 +66,7 @@ private:
 		points[1].y = rt.bottom + 10;
 	}
 	RECT rt;
+	COLORREF bgc;
 };
 
 class ContourTrapezoid : public Drawable {
@@ -74,12 +78,13 @@ public:
 		Polyline(hdc, points, 5);
 		DeletePen(basePen);
 	}
-	void Setter(POINT *p) { ///Four points, no less
+	void Setter(std::ifstream &st) { ///Four points, no less
 		int i;
+		st >> pen_type;
 		for (i = 0; i < count_of_p; ++i) {
-			points[i] = p[i];
+			st >> points[i].x >> points[i].y;
 		}
-		points[4] = p[0];
+		points[4] = points[0];
 	}
 	void SetPenType(int type) {
 		pen_type = type;
@@ -100,8 +105,26 @@ public:
 		DeletePen(basePen);
 		DeleteBrush(baseBrush);
 	}
-	void Getter() {
-
+	void Setter(std::ifstream &st) { ///Four points, no less
+		int i;
+		st >> pen_type >> brush_type;
+		for (i = 0; i < count_of_p; ++i) {
+			st >> points[i].x >> points[i].y;
+		}
+	}
+	void Draw(FilledTrapezoid &ft) {
+		int i;
+		for (i = 0; i < count_of_p; ++i) {
+			if (!GetPixel(hdc, points[i].x, points[i].y) == ft.GetPenColour() ||
+				!GetPixel(hdc, points[i].x, points[i].y) == ft.GetBrushColour())
+				throw EXCEPTION_NONCONTINUABLE;
+		}
+	}
+	COLORREF GetPenColour() {
+		return pen;
+	}
+	COLORREF GetBrushColour() {
+		return brush;
 	}
 	void SetType(int type, int type_of_type) {
 		if (type_of_type)

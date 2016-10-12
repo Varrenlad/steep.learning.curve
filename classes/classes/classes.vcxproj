@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{A8AE48C8-96C4-4728-80F5-4A04AA73CB43}</ProjectGuid>
-    <RootNamespace>steeplearningcurve</RootNamespace>
+    <ProjectGuid>{8B839AC0-6858-4A33-9B16-DD68BB298A46}</ProjectGuid>
+    <RootNamespace>classes</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -110,12 +110,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source.cpp" />
+    <ClInclude Include="..\..\steep.learning.curve\the_classes.h" />
+    <ClInclude Include="sio.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="the_draw.h" />
-    <ClInclude Include="the_include.h" />
-    <ClInclude Include="the_io.h" />
+    <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
