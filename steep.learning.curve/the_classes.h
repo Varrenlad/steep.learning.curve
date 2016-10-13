@@ -69,10 +69,8 @@ public:
 	void Getter(std::ofstream &st) {
 		int i;
 		try {
-			st << GetRValue(bgc) << " " << GetGValue(bgc) << " " << GetBValue(bgc) << "\n";
-			for (i = 0; i < count_of_p; ++i) {
-				st << points[i].x << " " << points[i].y << "\n";
-			}
+			st << (int) GetRValue(bgc) << ' ' << (int) GetGValue(bgc) 
+			   << ' ' << (int) GetBValue(bgc) << '\n' << '\n';
 		}
 		catch (int e) {
 			throw EXCEPTION_NONCONTINUABLE;
@@ -106,6 +104,13 @@ public:
 	void Setter(std::ifstream &st) { ///Four points, no less
 		int i;
 		st >> pen_type >> pen_width;
+		int red, green, blue;
+		st >> red >> green >> blue;
+		if (red < 0 || red > 255 ||
+			green < 0 || green > 255 ||
+			blue < 0 || blue > 255)
+			throw EXCEPTION_READ_FAULT;
+		else pen = RGB(red, green, blue);
 		for (i = 0; i < count_of_p - 1; ++i) {
 			st >> points[i].x >> points[i].y;
 		}
@@ -115,10 +120,14 @@ public:
 	void Getter(std::ofstream &st) {
 		int i;
 		try {
-			st << pen_type << "\n";
-			st << GetRValue(pen) << " " << GetGValue(pen) << " " << GetBValue(pen) << "\n";
+			st << pen_type << ' ' << pen_width << '\n';
+			st.flush();
+			st << (int) GetRValue(pen) << ' ' << (int) GetGValue(pen) << ' ' 
+			   << (int) GetBValue(pen) << '\n';
+			st.flush();
 			for (i = 0; i < count_of_p - 1; ++i) {
-				st << points[i].x << " " << points[i].y << "\n";
+				st << points[i].x << ' ' << points[i].y << '\n';
+				st.flush();
 			}
 		}
 		catch (int e) {
@@ -157,12 +166,15 @@ public:
 	void Getter(std::ofstream &st) {
 		int i;
 		try {
-			st << pen_type << " " << brush_type << "\n";
-			st << GetRValue(pen) << " " << GetGValue(pen) << " " << GetBValue(pen) << "\n";
-			st << GetRValue(brush) << " " << GetGValue(brush) << " " << GetBValue(brush) << "\n";
+			st << pen_type << ' ' << brush_type << '\n';
+			st << (int) GetRValue(pen) << ' ' << (int) GetGValue(pen) << ' ' 
+			   << (int) GetBValue(pen) << '\n';
+			st << (int) GetRValue(brush) << ' ' << (int) GetGValue(brush) << ' ' 
+			   << (int) GetBValue(brush) << '\n';
 			for (i = 0; i < count_of_p - 1; ++i) {
-				st << points[i].x << " " << points[i].y << "\n";
+				st << points[i].x << ' ' << points[i].y << '\n';
 			}
+			st << '\n';
 		}
 		catch (int e) {
 			throw;
@@ -171,8 +183,8 @@ public:
 	void Draw(FilledTrapezoid &ft) { 
 		int i;
 		for (i = 0; i < count_of_p; ++i) {
-			if (!GetPixel(hdc, points[i].x, points[i].y) == ft.GetPenColour() ||
-				!GetPixel(hdc, points[i].x, points[i].y) == ft.GetBrushColour())
+			if (!(GetPixel(hdc, points[i].x, points[i].y) == ft.GetPenColour()) ||
+				!(GetPixel(hdc, points[i].x, points[i].y) == ft.GetBrushColour()))
 				throw EXCEPTION_NONCONTINUABLE;
 		}
 	}
