@@ -1,7 +1,6 @@
 #pragma once
 #include "the_include.h"
 int validate_trapeze(trapeze);
-int validate_trapeze(trapeze, trapeze);
 int validate_trapeze(trapeze, trapeze, HDC);
 int validate_colour(colour); 
 int validate_input(trapeze, colour, colour);
@@ -29,19 +28,6 @@ int validate_trapeze(trapeze t) {
 		t.B[0] > t.A[0] && t.C[0] < t.D[0]) //wrong placed x i
 		return 1;
 	//Sumfin else?
-	return 0;
-}
-
-int validate_trapeze(trapeze inner, trapeze outer) {
-	if (inner.A[0] > outer.A[0] ||
-		inner.A[1] < outer.A[1] ||
-		inner.B[0] < outer.B[0] ||
-		inner.B[1] < outer.B[1] ||
-		inner.C[0] < outer.C[0] ||
-		inner.C[1] > outer.C[1] ||
-		inner.D[0] > outer.D[0] ||
-		inner.D[1] > outer.D[1])
-		return 1;
 	return 0;
 }
 
@@ -91,8 +77,7 @@ int validate_input(trapeze outer, trapeze inner, colour cTrapeze,
 				colour cBG, colour cPen1, colour cPen2) {
 	if (validate_trapeze(outer) || validate_trapeze(inner)   ||
 		validate_colour(cBG)    || validate_colour(cTrapeze) ||
-		validate_colour(cPen1)  || validate_colour(cPen2)    ||
-		validate_trapeze(inner, outer))
+		validate_colour(cPen1)  || validate_colour(cPen2))
 		return 1;
 	return 0;
 }
