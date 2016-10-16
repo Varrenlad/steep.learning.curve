@@ -94,8 +94,9 @@ private:
 
 class ContourTrapezoid : public Drawable {
 public:
-	ContourTrapezoid(HDC &hdc) : Drawable(5, hdc)
-	{};
+	ContourTrapezoid(HDC &hdc, HWND hwnd) : Drawable(5, hdc){
+		hwnd_i = hwnd;
+	};
 	void Draw() {
 		SelectPen(hdc, basePen);
 		Polyline(hdc, points, 5);
@@ -137,12 +138,14 @@ public:
 private:
 	int pen_type = 0;
 	COLORREF pen;
+	HWND hwnd_i;
 };
 
 class FilledTrapezoid : public Drawable {
 public:
-	FilledTrapezoid(HDC &hdc) : Drawable(4, hdc)
-	{};
+	FilledTrapezoid(HDC &hdc, HWND hwnd) : Drawable(4, hdc){
+		hwnd_i = hwnd;
+	};
 	void Draw() {
 		SelectPen(hdc, basePen);
 		SelectBrush(hdc, baseBrush);
@@ -183,20 +186,21 @@ public:
 	void Draw(FilledTrapezoid &ft) { 
 		int i;
 		for (i = 0; i < count_of_p; ++i) {
-			if (!(GetPixel(hdc, points[i].x, points[i].y) == ft.GetPenColour()) ||
-				!(GetPixel(hdc, points[i].x, points[i].y) == ft.GetBrushColour()))
+			if ((GetPixel(hdc, points[i].x, points[i].y) != ft.GetPenColour()) ||
+				(GetPixel(hdc, points[i].x, points[i].y) != ft.GetBrushColour()))
 				throw EXCEPTION_NONCONTINUABLE;
 		}
 	}
-private:
-	int pen_type = 0;
-	int brush_type = 0;
-	COLORREF pen;
-	COLORREF brush;
 	COLORREF GetPenColour() {
 		return pen;
 	}
 	COLORREF GetBrushColour() {
 		return brush;
 	}
+private:
+	int pen_type = 0;
+	int brush_type = 0;
+	COLORREF pen;
+	COLORREF brush;
+	HWND hwnd_i;
 };
