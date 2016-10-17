@@ -150,8 +150,8 @@ public:
 		SelectPen(hdc, basePen);
 		SelectBrush(hdc, baseBrush);
 		Polygon(hdc, points, 4);
-		DeletePen(basePen);
-		DeleteBrush(baseBrush);
+		//DeletePen(basePen);
+		//DeleteBrush(baseBrush);
 	}
 	void Setter(std::ifstream &st) { ///Four points, no less
 		int i, r, g, b;
@@ -169,12 +169,12 @@ public:
 	void Getter(std::ofstream &st) {
 		int i;
 		try {
-			st << pen_type << ' ' << brush_type << '\n';
+			st << pen_type << ' ' << pen_width << ' ' << brush_type << '\n';
 			st << (int) GetRValue(pen) << ' ' << (int) GetGValue(pen) << ' ' 
 			   << (int) GetBValue(pen) << '\n';
 			st << (int) GetRValue(brush) << ' ' << (int) GetGValue(brush) << ' ' 
 			   << (int) GetBValue(brush) << '\n';
-			for (i = 0; i < count_of_p - 1; ++i) {
+			for (i = 0; i < count_of_p; ++i) {
 				st << points[i].x << ' ' << points[i].y << '\n';
 			}
 			st << '\n';
@@ -186,10 +186,11 @@ public:
 	void Draw(FilledTrapezoid &ft) { 
 		int i;
 		for (i = 0; i < count_of_p; ++i) {
-			if ((GetPixel(hdc, points[i].x, points[i].y) != ft.GetPenColour()) ||
+			if ((GetPixel(hdc, points[i].x, points[i].y) != ft.GetPenColour()) &&
 				(GetPixel(hdc, points[i].x, points[i].y) != ft.GetBrushColour()))
 				throw EXCEPTION_NONCONTINUABLE;
 		}
+		this->Draw();
 	}
 	COLORREF GetPenColour() {
 		return pen;

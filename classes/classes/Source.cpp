@@ -6,7 +6,9 @@
 #include <windowsx.h>
 #include "../../steep.learning.curve/the_classes.h"
 
-#define INPUT_FILE "input.txt"
+//#define INPUT_FILE "input.txt"
+//#define INPUT_FILE "input1.txt"
+#define INPUT_FILE "input2.txt"
 #define OUTPUT_FILE "output.txt"
 
 void save_data(Drawable *obj, std::ofstream &ofstr);
@@ -212,10 +214,12 @@ int main() {
 	Background *bg = new Background(hdc, hwnd);
 	ifstr.open(INPUT_FILE, std::ifstream::in);
 	ofstr.open(OUTPUT_FILE, std::ofstream::out);
-	if (ifstr.fail() || ofstr.fail()) {
+	if (ifstr.rdstate() & std::ios::failbit ||
+		ofstr.rdstate() & std::ios::failbit) {
 		throw EXCEPTION_READ_FAULT;
 		return -1;
 	}
+	ifstr >> type;
 	try {
 		bg->Setter(ifstr);
 	}
@@ -225,7 +229,6 @@ int main() {
 		else std::cout << "Unknown exception in background setter";
 	}
 	objects.push_back(bg);
-	ifstr >> type;
 	switch (type) {
 	case 1:
 		{	ContourTrapezoid *t = new ContourTrapezoid(hdc, hwnd);
@@ -261,8 +264,8 @@ int main() {
 		{	FilledTrapezoid *in = new FilledTrapezoid(hdc, hwnd);
 		FilledTrapezoid *out = new FilledTrapezoid(hdc, hwnd);
 		try {
-			in->Setter(ifstr);
 			out->Setter(ifstr);
+			in->Setter(ifstr);
 		}
 		catch (int e) {
 			if (e == EXCEPTION_READ_FAULT)
@@ -301,8 +304,9 @@ void draw(std::vector<Drawable *> objects, HDC hdc) {
 			catch (int e) {
 				if (e == EXCEPTION_EXECUTE_FAULT)
 					TextOutA(hdc, 0, 0, "Unable to draw: window is too small", 36);
-				else
-					std::cout << "Unknown exception while drawing objects";
+				else if (e == EXCEPTION_NONCONTINUABLE)
+					TextOutA(hdc, 0, 0, "Couldn't draw inner trapezoid", 30);
+				else std::cout << "Unknown exception while drawing objects";
 				}
 			}
 		c = _getch();
@@ -317,10 +321,10 @@ void draw(std::vector<Drawable *> objects, HDC hdc) {
 					objects[i]->Move(0, 10);
 					break;
 				case 75:
-					objects[i]->Move(10, 0);
+					objects[i]->Move(-10, 0);
 					break;
 				case 77:
-					objects[i]->Move(-10, 0);
+					objects[i]->Move(10, 0);
 					break;
 				default:
 					break;
