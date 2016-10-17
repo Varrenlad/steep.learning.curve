@@ -1,4 +1,8 @@
 #pragma once
+#define EXCEPTION_OUT_OF_BORDER 1
+#define EXCEPTION_READ_FAULT 2
+#define EXCEPTION_WRONG_VALUES 3
+#define EXCEPTION_WRITE_FAIL 4
 
 HBRUSH CreateBrush(COLORREF color, int type);
 
@@ -42,6 +46,7 @@ protected:
 	int pen_width;
 	HPEN basePen;
 	HBRUSH baseBrush;
+	HWND hwnd_i;
 };
 
 class Background : public Drawable {
@@ -63,7 +68,7 @@ public:
 		if (red < 0   || red > 255 ||
 			green < 0 || green > 255 ||
 			blue < 0  || blue > 255)
-			throw EXCEPTION_READ_FAULT;
+			throw EXCEPTION_WRONG_VALUES;
 		else bgc = RGB(red, green, blue);
 	}
 	void Getter(std::ofstream &st) {
@@ -73,7 +78,7 @@ public:
 			   << ' ' << (int) GetBValue(bgc) << '\n' << '\n';
 		}
 		catch (int e) {
-			throw EXCEPTION_NONCONTINUABLE;
+			throw EXCEPTION_WRONG_VALUES;
 		}
 	}
 	~Background(){ //not sure if it even starts ~Drawable
@@ -87,7 +92,6 @@ private:
 		points[1].x = rt.right + 10;
 		points[1].y = rt.bottom + 10;
 	}
-	HWND hwnd_i;
 	RECT rt;
 	COLORREF bgc;
 };
@@ -98,6 +102,13 @@ public:
 		hwnd_i = hwnd;
 	};
 	void Draw() {
+		try {
+			BorderCheck();
+		}
+		catch(int e) {
+			if (e == EXCEPTION_OUT_OF_BORDER)
+				throw e;
+		}
 		SelectPen(hdc, basePen);
 		Polyline(hdc, points, 5);
 		DeletePen(basePen);
@@ -132,13 +143,22 @@ public:
 			}
 		}
 		catch (int e) {
-			throw;
+			throw e;
 		}
 	}
 private:
+	int BorderCheck() {
+		RECT rt;
+		int i, j;
+		GetClientRect(hwnd_i, &rt);
+		for (i = 0; i < count_of_p; ++i) {
+			if (points[i].x < 0 || points[i].x > rt.right ||
+				points[i].y < 0 || points[i].y > rt.bottom)
+				throw EXCEPTION_OUT_OF_BORDER;
+		}
+	}
 	int pen_type = 0;
 	COLORREF pen;
-	HWND hwnd_i;
 };
 
 class FilledTrapezoid : public Drawable {
@@ -147,6 +167,13 @@ public:
 		hwnd_i = hwnd;
 	};
 	void Draw() {
+		try {
+			BorderCheck();
+		}
+		catch (int e) {
+			if (e == EXCEPTION_OUT_OF_BORDER)
+				throw e;
+		}
 		SelectPen(hdc, basePen);
 		SelectBrush(hdc, baseBrush);
 		Polygon(hdc, points, 4);
@@ -188,7 +215,7 @@ public:
 		for (i = 0; i < count_of_p; ++i) {
 			if ((GetPixel(hdc, points[i].x, points[i].y) != ft.GetPenColour()) &&
 				(GetPixel(hdc, points[i].x, points[i].y) != ft.GetBrushColour()))
-				throw EXCEPTION_NONCONTINUABLE;
+				throw EXCEPTION_WRONG_VALUES;
 		}
 		this->Draw();
 	}
@@ -199,9 +226,18 @@ public:
 		return brush;
 	}
 private:
+	int BorderCheck() {
+		RECT rt;
+		int i, j;
+		GetClientRect(hwnd_i, &rt);
+		for (i = 0; i < count_of_p; ++i) {
+			if (points[i].x < 0 || points[i].x > rt.right ||
+				points[i].y < 0 || points[i].y > rt.bottom)
+				throw EXCEPTION_OUT_OF_BORDER;
+		}
+	}
 	int pen_type = 0;
 	int brush_type = 0;
 	COLORREF pen;
 	COLORREF brush;
-	HWND hwnd_i;
 };

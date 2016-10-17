@@ -1,6 +1,5 @@
 #include <fstream>
 #include <conio.h>
-#include <iostream>
 #include <vector>
 #include <Windows.h>
 #include <windowsx.h>
@@ -224,9 +223,9 @@ int main() {
 		bg->Setter(ifstr);
 	}
 	catch (int e) {
-		if (e == EXCEPTION_READ_FAULT)
-			std::cout << "Unable to read background color from file";
-		else std::cout << "Unknown exception in background setter";
+		if (e == EXCEPTION_WRONG_VALUES)
+			TextOutA(hdc, 0, 0, "Unable to read background color from file", 42);
+		else TextOutA(hdc, 0, 0, "Unknown exception in background setter", 39);
 	}
 	objects.push_back(bg);
 	switch (type) {
@@ -237,8 +236,8 @@ int main() {
 		}
 		catch (int e) {
 			if (e == EXCEPTION_READ_FAULT)
-				std::cout << "Unable to read trapezoid data from file";
-			else std::cout << "Unknown exception in trapezoid setter";
+				TextOutA(hdc, 0, 0, "Unable to read trapezoid data from file", 40);
+			else TextOutA(hdc, 0, 0, "Unknown exception in trapezoid setter", 38);
 		}
 		objects.push_back(t);
 
@@ -252,8 +251,8 @@ int main() {
 		}
 		catch (int e) {
 			if (e == EXCEPTION_READ_FAULT)
-				std::cout << "Unable to read trapezoid data from file";
-			else std::cout << "Unknown exception in trapezoid setter";
+				TextOutA(hdc, 0, 0, "Unable to read trapezoid data from file", 40);
+			else TextOutA(hdc, 0, 0, "Unknown exception in trapezoid setter", 38);
 		}
 		objects.push_back(t);
 
@@ -269,8 +268,8 @@ int main() {
 		}
 		catch (int e) {
 			if (e == EXCEPTION_READ_FAULT)
-				std::cout << "Unable to read trapezoid data from file";
-			else std::cout << "Unknown exception in double trapezoid setter";
+				TextOutA(hdc, 0, 0, "Unable to read trapezoid data from file", 40);
+			else TextOutA(hdc, 0, 0, "Unknown exception in double trapezoid setter", 45);
 		}
 		objects.push_back(out);
 		objects.push_back(in);
@@ -279,9 +278,9 @@ int main() {
 
 		break; }
 	default:
-		throw EXCEPTION_FLT_INVALID_OPERATION;
+		throw EXCEPTION_WRONG_VALUES;
 	}
-	std::cout << "Do you want to save current data? Y/n\n";
+	TextOutA(hdc, 0, 0, "Do you want to save current data? Y/n\n", 39);
 	c = getchar();
 	if (c != 'n' || c != 'N') {
 		ofstr << type << '\n';
@@ -302,11 +301,11 @@ void draw(std::vector<Drawable *> objects, HDC hdc) {
 					*dynamic_cast<FilledTrapezoid *> (objects[i - 1]));
 			}
 			catch (int e) {
-				if (e == EXCEPTION_EXECUTE_FAULT)
+				if (e == EXCEPTION_OUT_OF_BORDER)
 					TextOutA(hdc, 0, 0, "Unable to draw: window is too small", 36);
-				else if (e == EXCEPTION_NONCONTINUABLE)
-					TextOutA(hdc, 0, 0, "Couldn't draw inner trapezoid", 30);
-				else std::cout << "Unknown exception while drawing objects";
+				else if (e == EXCEPTION_WRONG_VALUES)
+					TextOutA(hdc, 0, 16, "Couldn't draw inner trapezoid", 30);
+				else TextOutA(hdc, 0, 32, "Unknown exception while drawing objects", 40);
 				}
 			}
 		c = _getch();
