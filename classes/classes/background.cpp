@@ -33,7 +33,7 @@ void Background::Getter(std::ofstream &st) {
 		st << (int)GetRValue(bgc) << ' ' << (int)GetGValue(bgc)
 			<< ' ' << (int)GetBValue(bgc) << '\n' << '\n';
 	}
-	catch (int e) {
+	catch (void) {
 		throw EXCEPTION_WRONG_VALUES;
 	}
 }

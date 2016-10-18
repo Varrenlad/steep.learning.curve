@@ -62,7 +62,7 @@ void FilledTrapezoid::Getter(std::ofstream &st) {
 		st << '\n';
 	}
 	catch (int e) {
-		throw;
+		throw e;
 	}
 }
 
