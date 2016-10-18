@@ -1,0 +1,96 @@
+#include "filledtrapezoid.h"
+#include "commonfunc.h"
+#include "commondata.h"
+
+FilledTrapezoid::FilledTrapezoid(HDC &hdc, HWND hwnd) : Drawable(4, hdc) {
+	hwnd_i = hwnd;
+};
+
+void FilledTrapezoid::Draw() {
+	try {
+		BorderCheck();
+	}
+	catch (int e) {
+		if (e == EXCEPTION_OUT_OF_BORDER)
+			throw e;
+	}
+	SelectPen(hdc, basePen);
+	SelectBrush(hdc, baseBrush);
+	Polygon(hdc, points, 4);
+}
+
+void FilledTrapezoid::Setter(std::ifstream &st) { ///Four points, no less
+	int i, r, g, b;
+	st >> pen_type >> pen_width >> brush_type;
+	st >> r >> g >> b;
+	if (r < 0 || r > 255 ||
+		g < 0 || g > 255 ||
+		b < 0 || b > 255)
+		throw EXCEPTION_READ_FAULT;
+	pen = RGB(r, g, b);
+	st >> r >> g >> b;
+	if (r < 0 || r > 255 ||
+		g < 0 || g > 255 ||
+		b < 0 || b > 255)
+		throw EXCEPTION_READ_FAULT;
+	brush = RGB(r, g, b);
+	for (i = 0; i < count_of_p; ++i) {
+		st >> points[i].x >> points[i].y;
+	}
+	if (this->points[2].y - this->points[3].y != 0 ||
+		this->points[1].y - this->points[0].y)
+		if ((this->points[2].x - this->points[3].x) /
+			(this->points[2].y - this->points[3].y) !=
+			(this->points[0].x - this->points[1].x) /
+			(this->points[0].y - this->points[1].y))
+			throw EXCEPTION_WRONG_VALUES;
+	basePen = CreatePen(pen_type, pen_width, pen);
+	baseBrush = CreateBrush(brush, brush_type);
+}
+
+void FilledTrapezoid::Getter(std::ofstream &st) {
+	int i;
+	try {
+		st << pen_type << ' ' << pen_width << ' ' << brush_type << '\n';
+		st << (int)GetRValue(pen) << ' ' << (int)GetGValue(pen) << ' '
+			<< (int)GetBValue(pen) << '\n';
+		st << (int)GetRValue(brush) << ' ' << (int)GetGValue(brush) << ' '
+			<< (int)GetBValue(brush) << '\n';
+		for (i = 0; i < count_of_p; ++i) {
+			st << points[i].x << ' ' << points[i].y << '\n';
+		}
+		st << '\n';
+	}
+	catch (int e) {
+		throw;
+	}
+}
+
+void FilledTrapezoid::Draw(FilledTrapezoid &ft) {
+	int i;
+	for (i = 0; i < count_of_p; ++i) {
+		if ((GetPixel(hdc, points[i].x, points[i].y) != ft.GetPenColour()) &&
+			(GetPixel(hdc, points[i].x, points[i].y) != ft.GetBrushColour()))
+			throw EXCEPTION_WRONG_VALUES;
+	}
+	this->Draw();
+}
+
+COLORREF FilledTrapezoid::GetPenColour() {
+	return pen;
+}
+
+COLORREF FilledTrapezoid::GetBrushColour() {
+	return brush;
+}
+
+void FilledTrapezoid::BorderCheck() {
+	RECT rt;
+	int i;
+	GetClientRect(hwnd_i, &rt);
+	for (i = 0; i < count_of_p; ++i) {
+		if (points[i].x < 0 || points[i].x > rt.right ||
+			points[i].y < 0 || points[i].y > rt.bottom)
+			throw EXCEPTION_OUT_OF_BORDER;
+	}
+}
