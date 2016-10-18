@@ -1,8 +1,12 @@
 #pragma once
 
-#define EXCEPTION_OUT_OF_BORDER 1
-#define EXCEPTION_WRONG_VALUES 3
-#define EXCEPTION_WRITE_FAIL 4
+#define EXC_BG_VL_WRONG 0
+#define EXC_C_TR_VL_WRONG 1
+#define EXC_F_TR_VL_WRONG 2
+#define EXC_OOB 3
+#define EXC_RD_ERR 4
+#define EXC_WR_FAIL 5
+#define EXC_NOT_IN_DC 6
 
 #include <fstream>
 #include <conio.h>

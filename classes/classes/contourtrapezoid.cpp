@@ -14,7 +14,7 @@ void ContourTrapezoid::Draw() {
 		BorderCheck();
 	}
 	catch (int e) {
-		if (e == EXCEPTION_OUT_OF_BORDER)
+		if (e == EXC_OOB)
 			throw e;
 	}
 	SelectPen(hdc, basePen);
@@ -30,7 +30,7 @@ void ContourTrapezoid::Setter(std::ifstream &st) { ///Four points, no less
 	if (red < 0 || red > 255 ||
 		green < 0 || green > 255 ||
 		blue < 0 || blue > 255)
-		throw EXCEPTION_READ_FAULT;
+		throw EXC_C_TR_VL_WRONG;
 	else pen = RGB(red, green, blue);
 	for (i = 0; i < count_of_p - 1; ++i) {
 		st >> points[i].x >> points[i].y;
@@ -41,7 +41,7 @@ void ContourTrapezoid::Setter(std::ifstream &st) { ///Four points, no less
 			(this->points[2].y - this->points[3].y) !=
 			(this->points[0].x - this->points[1].x) /
 			(this->points[0].y - this->points[1].y))
-			throw EXCEPTION_WRONG_VALUES;
+			throw EXC_C_TR_VL_WRONG;
 	points[4] = points[0];
 	basePen = CreatePen(pen_type, pen_width, pen);
 }
@@ -71,6 +71,6 @@ void ContourTrapezoid::BorderCheck() {
 	for (i = 0; i < count_of_p; ++i) {
 		if (points[i].x < 0 || points[i].x > rt.right ||
 			points[i].y < 0 || points[i].y > rt.bottom)
-			throw EXCEPTION_OUT_OF_BORDER;
+			throw EXC_OOB;
 	}
 }

@@ -5,7 +5,7 @@
 #include "filledtrapezoid.h"
 //#define INPUT_FILE "input.txt"
 //#define INPUT_FILE "input1.txt"
-#define INPUT_FILE "input2.txt"
+#define INPUT_FILE "input9.txt"
 #define OUTPUT_FILE "output.txt"
 
 void save_data(Drawable *obj, std::ofstream &ofstr);
@@ -17,83 +17,68 @@ int main() {
 	std::vector<Drawable *> objects;
 	HWND hwnd = GetConsoleWindow();;
 	HDC hdc = GetDC(hwnd);
-	unsigned int c, type;
+	unsigned int i, type;
 	Background *bg = new Background(hdc, hwnd);
 	ifstr.open(INPUT_FILE, std::ifstream::in);
 	ofstr.open(OUTPUT_FILE, std::ofstream::out);
 	if (ifstr.rdstate() & std::ios::failbit ||
 		ofstr.rdstate() & std::ios::failbit) {
-		throw EXCEPTION_READ_FAULT;
+		TextOutA(hdc, 0, 0, "Couldn't find file, aborting", 29);
+		getchar();
 		return -1;
 	}
 	ifstr >> type;
-	try {
-		bg->Setter(ifstr);
-	}
-	catch (int e) {
-		if (e == EXCEPTION_WRONG_VALUES)
-			TextOutA(hdc, 0, 0, "Unable to read background color from file", 42);
-		else TextOutA(hdc, 0, 0, "Unknown exception in background setter", 39);
-	}
 	objects.push_back(bg);
 	switch (type) {
 	case 1:
 		{	ContourTrapezoid *t = new ContourTrapezoid(hdc, hwnd);
-		try {
-			t->Setter(ifstr);
-		}
-		catch (int e) {
-			if (e == EXCEPTION_READ_FAULT)
-				TextOutA(hdc, 0, 0, "Unable to read trapezoid data from file", 40);
-			else TextOutA(hdc, 0, 0, "Unknown exception in trapezoid setter", 38);
-		}
 		objects.push_back(t);
-
-		draw(objects, hdc);
-
 		break; }
 	case 2:
 		{	FilledTrapezoid *t = new FilledTrapezoid(hdc, hwnd);
-		try {
-			t->Setter(ifstr);
-		}
-		catch (int e) {
-			if (e == EXCEPTION_READ_FAULT)
-				TextOutA(hdc, 0, 0, "Unable to read trapezoid data from file", 40);
-			else TextOutA(hdc, 0, 0, "Unknown exception in trapezoid setter", 38);
-		}
 		objects.push_back(t);
-
-		draw(objects, hdc);
-
 		break; }
 	case 3:
 		{	FilledTrapezoid *in = new FilledTrapezoid(hdc, hwnd);
 		FilledTrapezoid *out = new FilledTrapezoid(hdc, hwnd);
-		try {
-			out->Setter(ifstr);
-			in->Setter(ifstr);
-		}
-		catch (int e) {
-			if (e == EXCEPTION_READ_FAULT)
-				TextOutA(hdc, 0, 0, "Unable to read trapezoid data from file", 40);
-			else TextOutA(hdc, 0, 0, "Unknown exception in double trapezoid setter", 45);
-		}
 		objects.push_back(out);
 		objects.push_back(in);
-
-		draw(objects, hdc);
-
 		break; }
 	default:
-		throw EXCEPTION_WRONG_VALUES;
+		TextOutA(hdc, 0, 0, "Couldn't find type specializer, aborting", 41);
+		getchar();
+		exit(-1);
 	}
+	for (i = 0; i < objects.size(); ++i) {
+		try {
+			objects[i]->Setter(ifstr);
+		}
+		catch (int e) {
+			if (e == EXC_BG_VL_WRONG)
+				TextOutA(hdc, 0, 0, "Wrong background colour data", 29);
+			if (e == EXC_C_TR_VL_WRONG)
+				TextOutA(hdc, 0, 0, "Wrong contour trapezoid data", 29);
+			if (e == EXC_F_TR_VL_WRONG)
+				TextOutA(hdc, 0, 0, "Wrong filled trapezoid data", 28);
+			else
+				TextOutA(hdc, 0, 0, "Unknown error while reading file", 33);
+		}
+	}
+	draw(objects, hdc);
 	TextOutA(hdc, 0, 0, "Do you want to save current data? Y/n\n", 39);
-	c = getchar();
-	if (c != 'n' || c != 'N') {
+	i = getchar();
+	if (i != 'n' || i != 'N') {
 		ofstr << type << '\n';
-		for (c = 0; c < objects.size(); ++c) {
-			save_data(objects[c], ofstr);
+		for (i = 0; i < objects.size(); ++i) {
+			try {
+				save_data(objects[i], ofstr);
+			}
+			catch (int e) {
+				if (e == EXC_WR_FAIL)
+					TextOutA(hdc, 0, 0, "Unable to write data to file", 29);
+				else
+					TextOutA(hdc, 0, 0, "Unknown error while saving data", 32);
+			}
 		}
 	}
 }
@@ -109,9 +94,9 @@ void draw(std::vector<Drawable *> objects, HDC hdc) {
 					*dynamic_cast<FilledTrapezoid *> (objects[i - 1]));
 			}
 			catch (int e) {
-				if (e == EXCEPTION_OUT_OF_BORDER)
+				if (e == EXC_OOB)
 					TextOutA(hdc, 0, 0, "Unable to draw: window is too small", 36);
-				else if (e == EXCEPTION_WRONG_VALUES)
+				else if (e == EXC_F_TR_VL_WRONG)
 					TextOutA(hdc, 0, 16, "Couldn't draw inner trapezoid", 30);
 				else TextOutA(hdc, 0, 32, "Unknown exception while drawing objects", 40);
 				}
@@ -142,5 +127,10 @@ void draw(std::vector<Drawable *> objects, HDC hdc) {
 }
 
 void save_data(Drawable *obj, std::ofstream &ofstr) {
-	obj->Getter(ofstr);
+	try {
+		obj->Getter(ofstr);
+	}
+	catch (int e) {
+		throw e;
+	}
 }

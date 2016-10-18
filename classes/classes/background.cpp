@@ -19,13 +19,13 @@ void Background::Draw() {
 }
 
 void Background::Setter(std::ifstream &st) {
-	int red, green, blue;
-	st >> red >> green >> blue;
-	if (red < 0 || red > 255 ||
-		green < 0 || green > 255 ||
-		blue < 0 || blue > 255)
-		throw EXCEPTION_WRONG_VALUES;
-	else bgc = RGB(red, green, blue);
+	int r, g, b;
+	st >> r >> g >> b;
+	if (r < 0 || r > 255 ||
+		g < 0 || g > 255 ||
+		b < 0 || b > 255)
+		throw EXC_BG_VL_WRONG;
+	else bgc = RGB(r, g, b);
 }
 
 void Background::Getter(std::ofstream &st) {
@@ -33,8 +33,8 @@ void Background::Getter(std::ofstream &st) {
 		st << (int)GetRValue(bgc) << ' ' << (int)GetGValue(bgc)
 			<< ' ' << (int)GetBValue(bgc) << '\n' << '\n';
 	}
-	catch (void) {
-		throw EXCEPTION_WRONG_VALUES;
+	catch (int) {
+		throw EXC_WR_FAIL;
 	}
 }
 
