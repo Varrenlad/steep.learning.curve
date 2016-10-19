@@ -3,10 +3,7 @@
 #include "background.h"
 #include "contourtrapezoid.h"
 #include "filledtrapezoid.h"
-//#define INPUT_FILE "input.txt"
-//#define INPUT_FILE "input1.txt"
-#define INPUT_FILE "input2.txt"
-//#define OUTPUT_FILE "output.txt"
+#define INPUT_FILE "input.txt"
 
 void save_data(Drawable *obj, std::ofstream &ofstr);
 void draw(std::vector<Drawable *> objects, HDC hdc);
@@ -53,14 +50,14 @@ int main() {
 			objects[i]->Setter(ifstr);
 		}
 		catch (int e) {
-			if (e == EXC_BG_VL_WRONG)
+			if (e == EXC_BG_VL_WRONG) 
 				TextOutA(hdc, 0, 0, "Wrong background colour data", 29);
 			if (e == EXC_C_TR_VL_WRONG)
 				TextOutA(hdc, 0, 0, "Wrong contour trapezoid data", 29);
 			if (e == EXC_F_TR_VL_WRONG)
 				TextOutA(hdc, 0, 0, "Wrong filled trapezoid data", 28);
-			else
-				TextOutA(hdc, 0, 0, "Unknown error while reading file", 33);
+			getchar();
+			exit(-1);
 		}
 	}
 	ifstr.sync();

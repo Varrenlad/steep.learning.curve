@@ -42,13 +42,17 @@ void FilledTrapezoid::Setter(std::ifstream &st) { ///Four points, no less
 	for (i = 0; i < count_of_p; ++i) {
 		st >> points[i].x >> points[i].y;
 	}
-	if (this->points[2].y - this->points[3].y != 0 ||
-		this->points[1].y - this->points[0].y)
+	if ((this->points[2].y - this->points[3].y) &&
+		(this->points[0].y - this->points[1].y)){
 		if ((this->points[2].x - this->points[3].x) /
 			(this->points[2].y - this->points[3].y) !=
 			(this->points[0].x - this->points[1].x) /
 			(this->points[0].y - this->points[1].y))
 			throw EXC_F_TR_VL_WRONG;
+	}
+	else if (this->points[2].y - this->points[3].y !=
+			 this->points[0].y - this->points[1].y)
+		throw EXC_F_TR_VL_WRONG;
 
 	basePen = CreatePen(pen_type, pen_width, pen);
 	baseBrush = CreateBrush(brush, brush_type);
