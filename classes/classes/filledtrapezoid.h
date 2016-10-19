@@ -5,6 +5,7 @@
 class FilledTrapezoid : public Drawable {
 public:
 	FilledTrapezoid(HDC &hdc, HWND hwnd);
+	~FilledTrapezoid();
 	void Draw();
 	void Setter(std::ifstream &st);
 	void Getter(std::ofstream &st);

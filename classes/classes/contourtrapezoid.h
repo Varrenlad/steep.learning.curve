@@ -11,7 +11,7 @@ public:
 	~ContourTrapezoid();
 private:
 	void BorderCheck();
-	int pen_type = 0;
+	int pen_type;
 	COLORREF pen;
 };
 #endif

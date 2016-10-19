@@ -5,8 +5,8 @@
 #include "filledtrapezoid.h"
 //#define INPUT_FILE "input.txt"
 //#define INPUT_FILE "input1.txt"
-#define INPUT_FILE "input9.txt"
-#define OUTPUT_FILE "output.txt"
+#define INPUT_FILE "input2.txt"
+//#define OUTPUT_FILE "output.txt"
 
 void save_data(Drawable *obj, std::ofstream &ofstr);
 void draw(std::vector<Drawable *> objects, HDC hdc);
@@ -15,12 +15,11 @@ int main() {
 	std::ifstream ifstr;
 	std::ofstream ofstr;
 	std::vector<Drawable *> objects;
-	HWND hwnd = GetConsoleWindow();;
+	HWND hwnd = GetConsoleWindow();
 	HDC hdc = GetDC(hwnd);
 	unsigned int i, type;
 	Background *bg = new Background(hdc, hwnd);
 	ifstr.open(INPUT_FILE, std::ifstream::in);
-	ofstr.open(OUTPUT_FILE, std::ofstream::out);
 	if (ifstr.rdstate() & std::ios::failbit ||
 		ofstr.rdstate() & std::ios::failbit) {
 		TextOutA(hdc, 0, 0, "Couldn't find file, aborting", 29);
@@ -64,6 +63,9 @@ int main() {
 				TextOutA(hdc, 0, 0, "Unknown error while reading file", 33);
 		}
 	}
+	ifstr.sync();
+	ifstr.close();
+	ofstr.open(INPUT_FILE, std::ofstream::out);
 	draw(objects, hdc);
 	TextOutA(hdc, 0, 0, "Do you want to save current data? Y/n\n", 39);
 	i = getchar();
@@ -81,6 +83,8 @@ int main() {
 			}
 		}
 	}
+	ofstr.close();
+	return 0;
 }
 
 void draw(std::vector<Drawable *> objects, HDC hdc) {

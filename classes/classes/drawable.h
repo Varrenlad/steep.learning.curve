@@ -14,7 +14,6 @@ protected:
 	POINT *points;
 	HDC hdc;
 	int count_of_p;
-	int type_of_task;
 	int pen_width;
 	HPEN basePen;
 	HBRUSH baseBrush;

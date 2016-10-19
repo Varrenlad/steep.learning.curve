@@ -6,6 +6,11 @@ FilledTrapezoid::FilledTrapezoid(HDC &hdc, HWND hwnd) : Drawable(4, hdc) {
 	hwnd_i = hwnd;
 };
 
+FilledTrapezoid::~FilledTrapezoid() {
+	DeletePen(basePen);
+	DeleteBrush(baseBrush);
+}
+
 void FilledTrapezoid::Draw() {
 	try {
 		BorderCheck();
