@@ -82,3 +82,19 @@ void ContourTrapezoid::BorderCheck() {
 			throw EXC_OOB;
 	}
 }
+
+bool ContourTrapezoid::PointInside(POINT p) {
+	bool b1, b2, b3, res;
+	b1 = Signum(p, points[0], points[1]) < 0.0f;
+	b2 = Signum(p, points[1], points[3]) < 0.0f;
+	b3 = Signum(p, points[3], points[0]) < 0.0f;
+	res = ((b1 == b2) && (b2 == b3));
+	b1 = Signum(p, points[1], points[2]) < 0.0f;
+	b2 = Signum(p, points[2], points[3]) < 0.0f;
+	b3 = Signum(p, points[3], points[1]) < 0.0f;
+	return res && ((b1 == b2) && (b2 == b3));
+}
+
+float ContourTrapezoid::Signum(POINT p1, POINT p2, POINT p3) {
+	return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+}

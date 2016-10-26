@@ -1,8 +1,9 @@
 #include "container.h"
-template <class Type> Container <Type> ::Container() {
+template <typename T> Container <T> ::Container() {
+	T* check = new T;
 }
 
-template <class Type> Container <Type> ::~Container() {
+template <typename T> Container <T> ::~Container() {
 	temp *data;
 	while (first != nullptr) {
 		data = first->next;
@@ -11,7 +12,7 @@ template <class Type> Container <Type> ::~Container() {
 	}
 }
 
-template <class Type> void Container <Type> ::Save(std::ofstream &st) {
+template <typename T> void Container <T> ::Save(std::ofstream &st) {
 	data *temp = first;
 	while (temp != nullptr) {
 		temp->Getter(st);
@@ -19,34 +20,45 @@ template <class Type> void Container <Type> ::Save(std::ofstream &st) {
 	}
 }
 
-template <class Type> void Container <Type> ::Load(std::ifstream &st) {
+template <typename T> void Container <T> ::Load(std::ifstream &st) {
 	data *temp = first;
-	while (temp != nullptr) {
-		temp->Setter(st);
-		temp = temp->next;
+	while (st.peek() != EOF) {
+		try {
+			temp->Setter(st);
+			temp = temp->next;
+		}
+		catch (int e);
 	}
 }
 
-template <class Type> void Container <Type> ::Push(Type &obj) {
+template <typename T> void Container <T> ::Push(T &obj) {
 	last->next = new data;
+	last->next->prev = last;
 	last->obj = obj;
 	last = last->next;
 	count += 1;
 }
 
-template <class Type> void Container <Type> ::FrontPush(Type &obj) {
+template <typename T> void Container <T> ::FrontPush(T &obj) {
 	temp = new data;
 	temp->obj = obj;
 	temp->next = first;
+	first->prev = temp;
 	first = temp;
 	count += 1;
 }
 
-template <class Type> Type& Container <Type> ::Pop() {
+template <typename T> T& Container <T> ::Pop() {
 	return last->obj;
 }
 
-template <class FilledTrapezoid> void Container <FilledTrapezoid> ::Show(bool direction) {
+template <typename T> T Container <T> ::PopRem() {
+	temp = last->obj;
+	delete last;
+	return temp;
+}
+
+template <typename T> void Container <T> ::Show(bool direction) {
 	std::cout << count << " items in container";
 	data *test;
 	switch (direction) {
@@ -65,27 +77,19 @@ template <class FilledTrapezoid> void Container <FilledTrapezoid> ::Show(bool di
 	}
 }
 
-template <class FilledTrapezoid> FilledTrapezoid* Container <FilledTrapezoid> ::Search(POINT p) {
-
+template <class T> T* Container <T> ::Search(POINT p) {
+	std::cout << "Base container doesn't support save/load functions\n";
 }
 
-template <class FilledTrapezoid> FilledTrapezoid* Container <FilledTrapezoid> ::Search(COLORREF c) {
-
+template <class T> T* Container <T> ::Search(COLORREF c) {
+	std::cout << "Base container doesn't support save/load functions\n";
 }
-
-template <class ContourTrapezoid> void Container <ContourTrapezoid> ::Show(bool direction) {
-
-}
-
+/*
 template <class ContourTrapezoid> ContourTrapezoid* Container <ContourTrapezoid> ::Search(POINT p) {
 
 }
 
 template <class ContourTrapezoid> ContourTrapezoid* Container <ContourTrapezoid> ::Search(COLORREF c) {
-
-}
-
-template <class Drawable> void Container <Drawable> ::Show(bool direction) {
 
 }
 
@@ -96,3 +100,4 @@ template <class Drawable> Drawable* Container <Drawable> ::Search(POINT p) {
 template <class Drawable> Drawable* Container <Drawable> ::Search(COLORREF c) {
 
 }
+*/

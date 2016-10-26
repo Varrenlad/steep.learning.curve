@@ -16,7 +16,6 @@ private:
 	void BorderCheck();
 	int pen_type = 0;
 	int brush_type = 0;
-	COLORREF pen;
 	COLORREF brush;
 };
 #endif
