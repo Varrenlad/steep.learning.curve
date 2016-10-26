@@ -18,7 +18,7 @@ void Background::Draw() {
 	DeleteBrush(baseBrush);
 }
 
-void Background::Setter(std::ifstream &st) {
+void Background::Setter(std::istream &st) {
 	int r, g, b;
 	st >> r >> g >> b;
 	if (r < 0 || r > 255 ||
@@ -28,7 +28,7 @@ void Background::Setter(std::ifstream &st) {
 	else bgc = RGB(r, g, b);
 }
 
-void Background::Getter(std::ofstream &st) {
+void Background::Getter(std::ostream &st) {
 	try {
 		st << (int)GetRValue(bgc) << ' ' << (int)GetGValue(bgc)
 			<< ' ' << (int)GetBValue(bgc) << '\n' << '\n';

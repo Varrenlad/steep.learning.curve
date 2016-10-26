@@ -9,6 +9,7 @@
 #define EXC_NOT_IN_DC 6
 
 #include <fstream>
+#include <iostream>
 #include <conio.h>
 #include <vector>
 #include <Windows.h>

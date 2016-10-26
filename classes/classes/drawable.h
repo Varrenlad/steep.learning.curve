@@ -6,9 +6,9 @@ class Drawable {
 public:
 	Drawable(int input, HDC hdc_i);
 	virtual void Draw() = 0;
-	virtual void Setter(std::ifstream &st) = 0;
+	virtual void Setter(std::istream &st) = 0;
 	void Move(int x, int y);
-	virtual void Getter(std::ofstream &st) = 0;
+	virtual void Getter(std::ostream &st) = 0;
 	~Drawable();
 protected:
 	POINT *points;

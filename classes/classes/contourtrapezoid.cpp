@@ -1,7 +1,7 @@
 #include "contourtrapezoid.h"
 #include "commondata.h"
 
-ContourTrapezoid::ContourTrapezoid(HDC &hdc, HWND hwnd) : Drawable(5, hdc) {
+ContourTrapezoid::ContourTrapezoid(HDC &hdc, HWND hwnd) : Drawable(4, hdc) {
 	hwnd_i = hwnd;
 };
 
@@ -18,20 +18,24 @@ void ContourTrapezoid::Draw() {
 			throw e;
 	}
 	SelectPen(hdc, basePen);
-	Polyline(hdc, points, 5);
+	MoveToEx(hdc, points[0].x, points[0].y, NULL);
+	LineTo(hdc, points[1].x, points[1].y);
+	LineTo(hdc, points[2].x, points[2].y);
+	LineTo(hdc, points[3].x, points[3].y);
+	LineTo(hdc, points[0].x, points[0].y);
 	DeletePen(basePen);
 }
 
-void ContourTrapezoid::Setter(std::ifstream &st) { ///Four points, no less
+void ContourTrapezoid::Setter(std::istream &st) { ///Four points, no less
 	int i;
 	st >> pen_type >> pen_width;
-	int red, green, blue;
-	st >> red >> green >> blue;
-	if (red < 0 || red > 255 ||
-		green < 0 || green > 255 ||
-		blue < 0 || blue > 255)
+	int r, g, b;
+	st >> r >> g >> b;
+	if (r < 0 || r > 255 ||
+		g < 0 || g > 255 ||
+		b < 0 || b > 255)
 		throw EXC_C_TR_VL_WRONG;
-	else pen = RGB(red, green, blue);
+	else pen = RGB(r, g, b);
 	for (i = 0; i < count_of_p - 1; ++i) {
 		st >> points[i].x >> points[i].y;
 	}
@@ -46,7 +50,7 @@ void ContourTrapezoid::Setter(std::ifstream &st) { ///Four points, no less
 	basePen = CreatePen(pen_type, pen_width, pen);
 }
 
-void ContourTrapezoid::Getter(std::ofstream &st) {
+void ContourTrapezoid::Getter(std::ostream &st) {
 	int i;
 	try {
 		st << pen_type << ' ' << pen_width << '\n';

@@ -113,6 +113,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="background.cpp" />
+    <ClCompile Include="container.cpp" />
     <ClCompile Include="contourtrapezoid.cpp" />
     <ClCompile Include="drawable.cpp" />
     <ClCompile Include="filledtrapezoid.cpp" />
@@ -122,6 +123,7 @@
     <ClInclude Include="background.h" />
     <ClInclude Include="commondata.h" />
     <ClInclude Include="commonfunc.h" />
+    <ClInclude Include="container.h" />
     <ClInclude Include="contourtrapezoid.h" />
     <ClInclude Include="drawable.h" />
     <ClInclude Include="filledtrapezoid.h" />

@@ -1,14 +1,14 @@
 #ifndef FTRAP
 #define FTRAP
-#include "drawable.h"
+#include "contourtrapezoid.h"
 
-class FilledTrapezoid : public Drawable {
+class FilledTrapezoid : public ContourTrapezoid {
 public:
 	FilledTrapezoid(HDC &hdc, HWND hwnd);
 	~FilledTrapezoid();
 	void Draw();
-	void Setter(std::ifstream &st);
-	void Getter(std::ofstream &st);
+	void Setter(std::istream &st);
+	void Getter(std::ostream &st);
 	void Draw(FilledTrapezoid &ft);
 	COLORREF GetPenColour();
 	COLORREF GetBrushColour();

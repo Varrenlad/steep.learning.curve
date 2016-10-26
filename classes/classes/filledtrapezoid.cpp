@@ -2,8 +2,7 @@
 #include "commonfunc.h"
 #include "commondata.h"
 
-FilledTrapezoid::FilledTrapezoid(HDC &hdc, HWND hwnd) : Drawable(4, hdc) {
-	hwnd_i = hwnd;
+FilledTrapezoid::FilledTrapezoid(HDC &hdc, HWND hwnd) : ContourTrapezoid(hdc, hwnd) {
 };
 
 FilledTrapezoid::~FilledTrapezoid() {
@@ -24,7 +23,7 @@ void FilledTrapezoid::Draw() {
 	Polygon(hdc, points, 4);
 }
 
-void FilledTrapezoid::Setter(std::ifstream &st) { ///Four points, no less
+void FilledTrapezoid::Setter(std::istream &st) { ///Four points, no less
 	int i, r, g, b;
 	st >> pen_type >> pen_width >> brush_type;
 	st >> r >> g >> b;
@@ -54,7 +53,7 @@ void FilledTrapezoid::Setter(std::ifstream &st) { ///Four points, no less
 	baseBrush = CreateBrush(brush, brush_type);
 }
 
-void FilledTrapezoid::Getter(std::ofstream &st) {
+void FilledTrapezoid::Getter(std::ostream &st) {
 	int i;
 	try {
 		st << pen_type << ' ' << pen_width << ' ' << brush_type << '\n';
