@@ -12,6 +12,7 @@ struct list {
 #define EXC_RD_ERR 4
 #define EXC_WR_FAIL 5
 #define EXC_NOT_IN_DC 6
+#define EXC_CANT_CONTAIN 7
 
 #include <fstream>
 #include <iostream>

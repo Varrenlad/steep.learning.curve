@@ -1,7 +1,8 @@
 #include "container.h"
 
 template <typename T> Container <T> ::Container() {
-	T* check = new T;
+	if (dynamic_cast<const Drawable*>(T) != nullptr)
+		throw EXC_CANT_CONTAIN;
 }
 
 template <typename T> Container <T> ::~Container() {
