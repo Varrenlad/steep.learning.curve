@@ -15,7 +15,7 @@ void ContourTrapezoid::Draw() {
 	}
 	catch (int e) {
 		if (e == EXC_OOB)
-			throw e;
+			throw;
 	}
 	SelectPen(hdc, basePen);
 	MoveToEx(hdc, points[0].x, points[0].y, NULL);
@@ -68,7 +68,7 @@ void ContourTrapezoid::Getter(std::ostream &st) {
 		}
 	}
 	catch (int e) {
-		throw e;
+		throw;
 	}
 }
 

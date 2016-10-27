@@ -1,10 +1,11 @@
 #include "commondata.h"
+#include "container.h"
 #include "drawable.h"
 #include "background.h"
 #include "contourtrapezoid.h"
 #include "filledtrapezoid.h"
 #define INPUT_FILE "input.txt"
-
+/*
 void save_data(Drawable *obj, std::ofstream &ofstr);
 void draw(std::vector<Drawable *> objects, HDC hdc);
 
@@ -132,6 +133,57 @@ void save_data(Drawable *obj, std::ofstream &ofstr) {
 		obj->Getter(ofstr);
 	}
 	catch (int e) {
-		throw e;
+		throw;
+	}
+}*/
+
+int main() {
+	int pos;
+	Container<Drawable> ctr;
+	while (pos != 5) {
+		std::cout 
+			<< "1. Add element\n"
+			<< "2. Remove element\n"
+			<< "3. Show container\n"
+			<< "4. Search figures by color\n"
+			<< "5. Search figures by point\n"
+			<< "6. Load data from file\n"
+			<< "7. Save data to file\n"
+			<< "8. Exit\n";
+		pos = 0;
+		std::cin >> pos;
+		switch (pos) {
+		case 1: {
+			std::cout
+				<< "1. Add ""Background"" type\n"
+				<< "2. Add ""Contoured Trapezoid type\n"
+				<< "3. Add ""Filled Trapezoid type\n";
+			std::cin >> pos;
+			switch (pos) {
+			case 1:
+				Background *bg = new Background(hdc, hwnd);
+				bg->Setter(std::cin);
+				ctr.Push(*bg);
+			}
+		}
+			break;
+		case 2: {}
+			break;
+		case 3: {}
+			break;
+		case 4: {}
+			break;
+		case 5: {}
+			break;
+		case 6: {}
+			break;
+		case 7: {}
+			break;
+		case 8: {}
+			
+			break;
+		default:
+			break;
+		}
 	}
 }

@@ -15,9 +15,9 @@ public:
 	list *Search(POINT p);
 	list *Search(COLORREF c);
 	T& Pop();
-	const T& GetElement(int i);
+	T& GetElement(int i) const;
 	T PopRem();
-	void Show(bool direction);
+	void Show(bool direction) const;
 private:
 	struct data {
 		data *prev = nullptr;

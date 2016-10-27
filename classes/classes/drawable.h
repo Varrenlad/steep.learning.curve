@@ -11,7 +11,7 @@ public:
 	virtual void Getter(std::ostream &st) = 0;
 	virtual bool PointInside(POINT p) = 0;
 	virtual bool HasColour(COLORREF c) = 0;
-	~Drawable();
+	virtual ~Drawable();
 protected:
 	POINT *points;
 	HDC hdc;

@@ -3,6 +3,8 @@
 template <typename T> Container <T> ::Container() {
 	if (dynamic_cast<const Drawable*>(T) != nullptr)
 		throw EXC_CANT_CONTAIN;
+	count = 0;
+	last = nullptr;
 }
 
 template <typename T> Container <T> ::~Container() {
@@ -60,9 +62,9 @@ template <typename T> T Container <T> ::PopRem() {
 	return temp;
 }
 
-template <typename T> void Container <T> ::Show(bool direction) {
+template <typename T> void Container <T> ::Show(bool direction) const {
 	std::cout << count << " items in container";
-	data *test;
+	data *temp;
 	switch (direction) {
 	case true:
 		temp = first;
@@ -109,12 +111,14 @@ template <class T> list *Container <T> ::Search(COLORREF c) {
 	return retval;
 }
 
-template <class T> const T& Container <T> ::GetElement(int i) {
-	int iter;
+template <class T> T& Container <T> ::GetElement(int i) const {
+	int iter = 0;
+	if (i >= count)
+		throw EXC_CANT_CONTAIN;
 	data *temp = first;
-	while (iter != i || temp != nullptr) {
+	while (iter != i) {
 		temp = temp->next;
-		++i;
+		++iter;
 	}
 	return temp->obj;
 }

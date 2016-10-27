@@ -11,8 +11,8 @@ public:
 	void Getter(std::ostream &st);
 	void Draw(FilledTrapezoid &ft);
 	bool HasColour(COLORREF c);
-	COLORREF GetPenColour();
-	COLORREF GetBrushColour();
+	const COLORREF GetPenColour() const;
+	const COLORREF GetBrushColour() const;
 private:
 	void BorderCheck();
 	int pen_type = 0;

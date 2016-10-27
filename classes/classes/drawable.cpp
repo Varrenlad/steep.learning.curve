@@ -18,5 +18,7 @@ void Drawable::Move(int x, int y) {
 
 Drawable::~Drawable() {
 	delete[] points;
+	DeletePen(basePen);
+	DeleteBrush(baseBrush);
 	count_of_p = 0;
 }

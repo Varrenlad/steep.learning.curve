@@ -16,7 +16,7 @@ void FilledTrapezoid::Draw() {
 	}
 	catch (int e) {
 		if (e == EXC_OOB)
-			throw e;
+			throw;
 	}
 	SelectPen(hdc, basePen);
 	SelectBrush(hdc, baseBrush);
@@ -54,7 +54,7 @@ void FilledTrapezoid::Setter(std::istream &st) { ///Four points, no less
 		throw EXC_F_TR_VL_WRONG;
 
 	basePen = CreatePen(pen_type, pen_width, pen);
-	baseBrush = CreateBrush(brush, brush_type);
+	baseBrush = *CreateBrush(brush, brush_type);
 }
 
 void FilledTrapezoid::Getter(std::ostream &st) {
@@ -71,7 +71,7 @@ void FilledTrapezoid::Getter(std::ostream &st) {
 		st << '\n';
 	}
 	catch (int e) {
-		throw e;
+		throw;
 	}
 }
 
@@ -85,11 +85,11 @@ void FilledTrapezoid::Draw(FilledTrapezoid &ft) {
 	this->Draw();
 }
 
-COLORREF FilledTrapezoid::GetPenColour() {
+const COLORREF FilledTrapezoid::GetPenColour() const {
 	return pen;
 }
 
-COLORREF FilledTrapezoid::GetBrushColour() {
+const COLORREF FilledTrapezoid::GetBrushColour() const {
 	return brush;
 }
 

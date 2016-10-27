@@ -3,6 +3,7 @@
 
 Background::Background(HDC &hdc, HWND hwnd) : Drawable(2, hdc)
 {
+	bgc = 0;
 	hwnd_i = hwnd;
 };
 

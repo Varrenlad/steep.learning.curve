@@ -16,6 +16,6 @@ private:
 	int pen_type;
 protected:
 	COLORREF pen;
-	float Signum(POINT p1, POINT p2, POINT p3);
+	static float Signum(POINT p1, POINT p2, POINT p3);
 };
 #endif
