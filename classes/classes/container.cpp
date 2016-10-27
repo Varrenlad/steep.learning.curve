@@ -1,7 +1,7 @@
 #include "container.h"
 
 template <typename T> Container <T> ::Container() {
-	if (dynamic_cast<const Drawable*>(T) != nullptr)
+	if (dynamic_cast<const Drawable*>(T) == nullptr)
 		throw EXC_CANT_CONTAIN;
 	count = 0;
 	last = nullptr;
