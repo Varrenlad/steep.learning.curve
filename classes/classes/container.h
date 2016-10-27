@@ -12,9 +12,10 @@ public:
 	void Load(std::ifstream &st);
 	void FrontPush(T &obj);
 	void Push(T &obj);
-	T *Search(POINT p);
-	T *Search(COLORREF c);
+	list *Search(POINT p);
+	list *Search(COLORREF c);
 	T& Pop();
+	const T& GetElement(int i);
 	T PopRem();
 	void Show(bool direction);
 private:
@@ -28,15 +29,16 @@ private:
 	data *last;
 };
 
+/*
 template <> class Container<FilledTrapezoid> {
 public:
 	//void Save(std::ofstream &st);
 	//void Load(std::ifstream &st);
 	//FilledTrapezoid& Pop();
-	FilledTrapezoid *Search(POINT p) {
+	int Search(POINT p) {
 		std::cout << "Base container doesn't support save/load functions\n";
 	};
-	FilledTrapezoid *Search(COLORREF c) {};
+	int Search(COLORREF c) {};
 private:
 	struct data {
 		data *prev = nullptr;
@@ -50,8 +52,8 @@ public:
 	//void Save(std::ofstream &st);
 	//void Load(std::ifstream &st);
 	//ContourTrapezoid& Pop();
-	ContourTrapezoid *Search(POINT p) {};
-	ContourTrapezoid *Search(COLORREF c) {};
+	int Search(POINT p) {};
+	int Search(COLORREF c) {};
 private:
 	struct data {
 		data *prev = nullptr;
@@ -64,8 +66,8 @@ template <> class Container<Drawable> {
 public:
 	//Drawable& Pop();
 	//void Show(bool direction);
-	Drawable *Search(POINT p) {};
-	Drawable *Search(COLORREF c) {
+	int Search(POINT p) {};
+	int Search(COLORREF c) {
 		std::cout << "Base container doesn't support save/load functions\n";
 	};
 private:
@@ -74,4 +76,4 @@ private:
 		Drawable &obj;
 		data *next = nullptr;
 	};
-};
+};*/

@@ -1,4 +1,5 @@
 #include "container.h"
+
 template <typename T> Container <T> ::Container() {
 	T* check = new T;
 }
@@ -77,12 +78,44 @@ template <typename T> void Container <T> ::Show(bool direction) {
 	}
 }
 
-template <class T> T* Container <T> ::Search(POINT p) {
-	std::cout << "Base container doesn't support save/load functions\n";
+template <class T> list *Container <T> ::Search(POINT p) {
+	list *retval = new list, *templ = retval;
+	int i = 0;
+	data *temp = first;
+	while (temp != nullptr) {
+		if (temp->obj.PointInside(p)) {
+			templ->i = i;
+			templ->next = new list;
+			templ = templ->next;
+		}
+		++i;
+	}
+	return retval;
 }
 
-template <class T> T* Container <T> ::Search(COLORREF c) {
-	std::cout << "Base container doesn't support save/load functions\n";
+template <class T> list *Container <T> ::Search(COLORREF c) {
+	list *retval = new list, *templ = retval;
+	int i = 0;
+	data *temp = first;
+	while (temp != nullptr) {
+		if (temp->obj.HasColour(c)) {
+			templ->i = i;
+			templ->next = new list;
+			templ = templ->next;
+		}
+		++i;
+	}
+	return retval;
+}
+
+template <class T> const T& Container <T> ::GetElement(int i) {
+	int iter;
+	data *temp = first;
+	while (iter != i || temp != nullptr) {
+		temp = temp->next;
+		++i;
+	}
+	return temp->obj;
 }
 /*
 template <class ContourTrapezoid> ContourTrapezoid* Container <ContourTrapezoid> ::Search(POINT p) {
@@ -100,4 +133,4 @@ template <class Drawable> Drawable* Container <Drawable> ::Search(POINT p) {
 template <class Drawable> Drawable* Container <Drawable> ::Search(COLORREF c) {
 
 }
-*/
+	*/

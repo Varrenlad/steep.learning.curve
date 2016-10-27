@@ -103,3 +103,7 @@ void FilledTrapezoid::BorderCheck() {
 			throw EXC_OOB;
 	}
 }
+
+bool FilledTrapezoid::HasColour(COLORREF c) {
+	return (pen == c || brush == c);
+}

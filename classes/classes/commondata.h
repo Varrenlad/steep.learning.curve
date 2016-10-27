@@ -1,5 +1,10 @@
 #pragma once
 
+struct list {
+	int i;
+	list *next = nullptr;
+};
+
 #define EXC_BG_VL_WRONG 0
 #define EXC_C_TR_VL_WRONG 1
 #define EXC_F_TR_VL_WRONG 2

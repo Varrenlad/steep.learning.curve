@@ -8,6 +8,8 @@ public:
 	void Draw();
 	void Setter(std::istream &st);
 	void Getter(std::ostream &st);
+	bool PointInside(POINT p);
+	bool HasColour(COLORREF c);
 	~Background();
 private:
 	void Update(HWND hwnd);

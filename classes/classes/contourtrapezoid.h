@@ -9,6 +9,7 @@ public:
 	void Setter(std::istream &st);
 	void Getter(std::ostream &st);
 	bool PointInside(POINT p);
+	bool HasColour(COLORREF c);
 	~ContourTrapezoid();
 private:
 	void BorderCheck();

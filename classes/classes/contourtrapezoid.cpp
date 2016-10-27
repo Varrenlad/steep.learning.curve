@@ -98,3 +98,7 @@ bool ContourTrapezoid::PointInside(POINT p) {
 float ContourTrapezoid::Signum(POINT p1, POINT p2, POINT p3) {
 	return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
 }
+
+bool ContourTrapezoid::HasColour(COLORREF c) {
+	return (pen == c);
+}

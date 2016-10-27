@@ -9,6 +9,8 @@ public:
 	virtual void Setter(std::istream &st) = 0;
 	void Move(int x, int y);
 	virtual void Getter(std::ostream &st) = 0;
+	virtual bool PointInside(POINT p) = 0;
+	virtual bool HasColour(COLORREF c) = 0;
 	~Drawable();
 protected:
 	POINT *points;

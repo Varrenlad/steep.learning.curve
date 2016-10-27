@@ -45,3 +45,12 @@ void Background::Update(HWND hwnd) {
 	points[1].x = rt.right + 10;
 	points[1].y = rt.bottom + 10;
 }
+
+bool Background::PointInside(POINT p) {
+	return (p.x > points[0].x && p.x < points[1].x &&
+			p.y > points[0].y && p.y < points[1].y);
+}
+
+bool Background::HasColour(COLORREF c) {
+	return (bgc == c);
+}

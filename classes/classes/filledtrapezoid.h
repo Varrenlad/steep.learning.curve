@@ -10,6 +10,7 @@ public:
 	void Setter(std::istream &st);
 	void Getter(std::ostream &st);
 	void Draw(FilledTrapezoid &ft);
+	bool HasColour(COLORREF c);
 	COLORREF GetPenColour();
 	COLORREF GetBrushColour();
 private:
