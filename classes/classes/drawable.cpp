@@ -1,5 +1,4 @@
 #include "drawable.h"
-#include "commondata.h"
 
 Drawable::Drawable(int input, HDC hdc_i) {
 	points = new POINT[input];

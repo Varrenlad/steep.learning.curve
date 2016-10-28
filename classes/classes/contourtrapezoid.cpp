@@ -1,5 +1,4 @@
 #include "contourtrapezoid.h"
-#include "commondata.h"
 
 ContourTrapezoid::ContourTrapezoid(HDC &hdc, HWND hwnd) : Drawable(4, hdc) {
 	hwnd_i = hwnd;
@@ -50,7 +49,6 @@ void ContourTrapezoid::Setter(std::istream &st) { ///Four points, no less
 	else if (this->points[2].y - this->points[3].y !=
 		this->points[0].y - this->points[1].y)
 		throw EXC_F_TR_VL_WRONG;
-	points[4] = points[0];
 	basePen = CreatePen(pen_type, pen_width, pen);
 }
 

@@ -1,5 +1,4 @@
 #include "background.h"
-#include "commondata.h"
 
 Background::Background(HDC &hdc, HWND hwnd) : Drawable(2, hdc)
 {

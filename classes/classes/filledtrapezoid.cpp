@@ -1,6 +1,5 @@
 #include "filledtrapezoid.h"
 #include "commonfunc.h"
-#include "commondata.h"
 
 FilledTrapezoid::FilledTrapezoid(HDC &hdc, HWND hwnd) : ContourTrapezoid(hdc, hwnd) {
 };

@@ -1,9 +1,9 @@
-#include "commondata.h"
+//#include "commondata.h"
 #include "container.h"
-#include "drawable.h"
+//#include "drawable.h"
 #include "background.h"
-#include "contourtrapezoid.h"
-#include "filledtrapezoid.h"
+//#include "contourtrapezoid.h"
+//#include "filledtrapezoid.h"
 #define INPUT_FILE "input.txt"
 /*
 void save_data(Drawable *obj, std::ofstream &ofstr);
@@ -138,9 +138,11 @@ void save_data(Drawable *obj, std::ofstream &ofstr) {
 }*/
 
 int main() {
-	int pos;
-	Container<Drawable> ctr;
-	while (pos != 5) {
+	int pos = 0;
+	HWND hwnd = GetConsoleWindow();
+	HDC hdc = GetDC(hwnd);
+	Container<Drawable &> ctr;
+	while (pos != 8) {
 		std::cout 
 			<< "1. Add element\n"
 			<< "2. Remove element\n"
@@ -159,31 +161,157 @@ int main() {
 				<< "2. Add ""Contoured Trapezoid type\n"
 				<< "3. Add ""Filled Trapezoid type\n";
 			std::cin >> pos;
+			int place = 0;
+			std::cout
+				<< "1. Push to front\n"
+				<< "2. Push to back\n";
+			std::cin >> place;
+			switch (pos) {
+			case 1: {
+				std::cout 
+					<< "Setter syntax is:\n"
+					<< "red green blue\n";
+				Background *obj = new Background(hdc, hwnd);
+				obj->Setter(std::cin);
+				if (place == 1)
+					ctr.Push(*obj);
+				if (place == 2)
+					ctr.FrontPush(*obj);
+				break;
+			}
+			case 2: {
+				std::cout
+					<< "Setter syntax is:\n"
+					<< "pen_type pen_width\n"
+					<< "r g b\n"
+					<< "A.x A.y B.x B.y\n"
+					<< "C.x C.y D.x D.y\n";
+				ContourTrapezoid *obj = new ContourTrapezoid(hdc, hwnd);
+				obj->Setter(std::cin);
+				if (place == 1)
+					ctr.Push(*obj);
+				if (place == 2)
+					ctr.FrontPush(*obj);
+				break;
+			}
+			case 3: {
+				FilledTrapezoid *obj = new FilledTrapezoid(hdc, hwnd);
+				std::cout
+					<< "Setter syntax is:\n"
+					<< "pen_type pen_width brush_type\n"
+					<< "r g b for pen\n"
+					<< "r g b for brush\n"
+					<< "A.x A.y B.x B.y\n"
+					<< "C.x C.y D.x D.y\n";
+				obj->Setter(std::cin);
+				if (place == 1)
+					ctr.Push(*obj);
+				if (place == 2)
+					ctr.FrontPush(*obj);
+				break;
+			}
+			default:
+				break;
+			}
+			break;
+		}
+		case 2: {
+			pos = 0;
+			std::cout
+				<< "1. Show last element\n"
+				<< "2. Remove last element\n";
+			std::cin >> pos;
 			switch (pos) {
 			case 1:
-				Background *bg = new Background(hdc, hwnd);
-				bg->Setter(std::cin);
-				ctr.Push(*bg);
+				ctr.Pop().Getter(std::cout);
+				break;
+			case 2:
+				ctr.PopRem().Getter(std::cout);
+				break;
+			default:
+				break;
 			}
+			break;
 		}
+		case 3: {
+			pos = 0;
+			std::cout
+				<< "1. Show list forwards\n"
+				<< "2. Show list backwards\n";
+			std::cin >> pos;
+			switch (pos) {
+			case 1:
+				ctr.Show(false);
+				break;
+			case 2:
+				ctr.Show(true);
+				break;
+			default:
+				break;
+				}
 			break;
-		case 2: {}
+		}
+		case 4: {
+			int r, g, b;
+			std::cout << "Enter red green and blue components\n";
+			std::cin >> r >> g >> b;
+			list *t, *l = ctr.Search(RGB(r, g, b));
+			t = l;
+			while (t != nullptr) {
+				std::cout << t->i;
+				t = t->next;
+			}
+			t = l;
+			while (t != nullptr) {
+				l = t->next;
+				delete t;
+				t = l;
+			}
+			delete t;
 			break;
-		case 3: {}
+		}
+		case 5: {
+			POINT p;
+			std::cout << "Enter X and Y coordinates\n";
+			std::cin >> p.x, p.y;
+			list *t, *l = ctr.Search(p);
+			t = l;
+			while (t != nullptr) {
+				std::cout << t->i;
+				t = t->next;
+			}
+			t = l;
+			while (t != nullptr) {
+				l = t->next;
+				delete t;
+				t = l;
+			}
+			delete t;
 			break;
-		case 4: {}
+		}
+		case 6: {
+			std::ifstream st;
+			char name[FILENAME_MAX];
+			std::cin >> name;
+			st.open(name, std::ifstream::in);
+			if (!st.rdstate() & std::ios::failbit) {
+				ctr.Load(st);
+			}
 			break;
-		case 5: {}
+		}
+		case 7: {
+			std::ofstream st;
+			char name[FILENAME_MAX];
+			std::cin >> name;
+			st.open(name, std::ifstream::out);
+			if (!st.rdstate() & std::ios::failbit) {
+				ctr.Save(st);
+			}
 			break;
-		case 6: {}
-			break;
-		case 7: {}
-			break;
-		case 8: {}
-			
-			break;
+		}
 		default:
 			break;
 		}
 	}
+	return 0;
 }

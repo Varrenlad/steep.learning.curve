@@ -1,9 +1,5 @@
-#pragma once
-
-struct list {
-	int i;
-	list *next = nullptr;
-};
+#ifndef CDAT
+#define CDAT
 
 #define EXC_BG_VL_WRONG 0
 #define EXC_C_TR_VL_WRONG 1
@@ -20,3 +16,10 @@ struct list {
 #include <vector>
 #include <Windows.h>
 #include <windowsx.h>
+
+struct list {
+	int i;
+	list *next = nullptr;
+};
+
+#endif

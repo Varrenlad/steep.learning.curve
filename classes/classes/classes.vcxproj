@@ -81,6 +81,9 @@
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
     </Bscmake>
+    <Link>
+      <ShowProgress>NotSet</ShowProgress>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -117,7 +120,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="background.cpp" />
-    <ClCompile Include="container.cpp" />
+    <ClCompile Include="container.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="contourtrapezoid.cpp" />
     <ClCompile Include="drawable.cpp" />
     <ClCompile Include="filledtrapezoid.cpp" />
