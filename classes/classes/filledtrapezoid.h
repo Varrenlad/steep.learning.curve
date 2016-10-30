@@ -13,9 +13,7 @@ public:
 	bool HasColour(COLORREF c);
 	const COLORREF GetPenColour() const;
 	const COLORREF GetBrushColour() const;
-private:
-	void BorderCheck();
-	int pen_type = 0;
+protected:
 	int brush_type = 0;
 	COLORREF brush;
 };

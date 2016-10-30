@@ -8,22 +8,21 @@
 template <class T> class Container {
 	struct data {
 		data *prev = nullptr;
-		T &obj;
+		T *obj;
 		data *next = nullptr;
-		data(T &inner) : obj(inner) {};
+		char signature = 'd';
 	};
 protected:
 	size_t count;
 	data *first;
-	data *second;
 	data *last = nullptr;
 public:
 	Container();
 	~Container();
 	void Save(std::ofstream &st);
 	void Load(std::ifstream &st);
-	void FrontPush(T &obj);
-	void Push(T &obj);
+	void FrontPush(T *obj);
+	void Push(T *obj);
 	list *Search(POINT p);
 	list *Search(COLORREF c);
 	T& Pop();

@@ -54,3 +54,7 @@ bool Background::PointInside(POINT p) {
 bool Background::HasColour(COLORREF c) {
 	return (bgc == c);
 }
+
+const COLORREF Background::GetColour() const {
+	return bgc;
+}

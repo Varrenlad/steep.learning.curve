@@ -126,6 +126,7 @@
     <ClCompile Include="contourtrapezoid.cpp" />
     <ClCompile Include="drawable.cpp" />
     <ClCompile Include="filledtrapezoid.cpp" />
+    <ClCompile Include="partialtrapezoid.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -136,6 +137,7 @@
     <ClInclude Include="contourtrapezoid.h" />
     <ClInclude Include="drawable.h" />
     <ClInclude Include="filledtrapezoid.h" />
+    <ClInclude Include="partialtrapezoid.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

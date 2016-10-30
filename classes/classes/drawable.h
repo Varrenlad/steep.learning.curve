@@ -5,6 +5,7 @@
 class Drawable {
 public:
 	Drawable(int input, HDC hdc_i);
+	virtual char GetType() = 0;
 	virtual void Draw() = 0;
 	virtual void Setter(std::istream &st) = 0;
 	void Move(int x, int y);

@@ -10,6 +10,7 @@ public:
 	void Getter(std::ostream &st);
 	bool PointInside(POINT p);
 	bool HasColour(COLORREF c);
+	const COLORREF GetColour() const;
 	~Background();
 private:
 	void Update(HWND hwnd);

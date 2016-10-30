@@ -294,7 +294,7 @@ int main() {
 			char name[FILENAME_MAX];
 			std::cin >> name;
 			st.open(name, std::ifstream::in);
-			if (!st.rdstate() & std::ios::failbit) {
+			if (!(st.rdstate() & std::ios::failbit)) {
 				ctr.Load(st);
 			}
 			break;
@@ -304,7 +304,7 @@ int main() {
 			char name[FILENAME_MAX];
 			std::cin >> name;
 			st.open(name, std::ifstream::out);
-			if (!st.rdstate() & std::ios::failbit) {
+			if (!(st.rdstate() & std::ios::failbit)) {
 				ctr.Save(st);
 			}
 			break;

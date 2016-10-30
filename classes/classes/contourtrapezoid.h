@@ -11,10 +11,9 @@ public:
 	bool PointInside(POINT p);
 	bool HasColour(COLORREF c);
 	~ContourTrapezoid();
-private:
+protected:
 	void BorderCheck();
 	int pen_type;
-protected:
 	COLORREF pen;
 	static float Signum(POINT p1, POINT p2, POINT p3);
 };
