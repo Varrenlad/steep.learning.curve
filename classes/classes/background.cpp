@@ -26,12 +26,13 @@ void Background::Setter(std::istream &st) {
 		b < 0 || b > 255)
 		throw EXC_BG_VL_WRONG;
 	else bgc = RGB(r, g, b);
+	st.get();
 }
 
 void Background::Getter(std::ostream &st) {
 	try {
 		st << (int)GetRValue(bgc) << ' ' << (int)GetGValue(bgc)
-			<< ' ' << (int)GetBValue(bgc) << '\n' << '\n';
+			<< ' ' << (int)GetBValue(bgc) << '\n';
 	}
 	catch (int) {
 		throw EXC_WR_FAIL;

@@ -96,7 +96,7 @@ bool ContourTrapezoid::HasColour(COLORREF c) {
 	return (pen == c);
 }
 
-bool ContourTrapezoid::IsCorrect(POINT *points) const {
+void ContourTrapezoid::IsCorrect(POINT *points) const {
 	if ((points[2].y - points[3].y) &&
 		(points[0].y - points[1].y)) {
 		if ((points[2].x - points[3].x) /

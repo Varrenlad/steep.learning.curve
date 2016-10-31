@@ -18,7 +18,6 @@ protected:
 	data *last = nullptr;
 public:
 	Container();
-	~Container();
 	void Save(std::ofstream &st);
 	void Load(std::ifstream &st, HDC hdc, HWND hwnd);
 	void FrontPush(T *obj);
@@ -29,6 +28,7 @@ public:
 	T& GetElement(size_t i) const;
 	T* PopRem();
 	void Show(bool direction) const;
+	~Container();
 }
 #include "container.cpp"
 #endif

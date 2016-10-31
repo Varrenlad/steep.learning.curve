@@ -13,7 +13,7 @@ public:
 	char GetType() const;
 	~ContourTrapezoid();
 protected:
-	bool IsCorrect(POINT *points) const;
+	void IsCorrect(POINT *points) const;
 	void BorderCheck();
 	int pen_type;
 	COLORREF pen;

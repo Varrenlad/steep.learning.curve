@@ -1,9 +1,4 @@
-//#include "commondata.h"
 #include "container.h"
-//#include "drawable.h"
-#include "background.h"
-//#include "contourtrapezoid.h"
-//#include "filledtrapezoid.h"
 #define INPUT_FILE "input.txt"
 /*
 void save_data(Drawable *obj, std::ofstream &ofstr);

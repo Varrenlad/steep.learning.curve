@@ -39,34 +39,41 @@ template <class T> void Container <T> ::Save(std::ofstream &st) {
 		default:
 			break;
 		}
+		temp = temp->next;
 	}
 }
 
 template <class T> void Container <T> ::Load(std::ifstream &st, HDC hdc, HWND hwnd) {
 	data *temp = first;
-	size_t i = 0;
-	st >> this->count;
-	char *type = new char[this->count + 2];
-	st.readsome(type, count + 1);
+	size_t i;
+	st >> i;
 	st.get();
-	while (i < count) {
-		switch (type[i]) {
+	char *type = new char[i + 1];
+	st.readsome(type, i);
+	st.get();
+	while (i > count) {
+		switch (type[count]) {
 		case 'b': {
 			Background *obj = new Background(hdc, hwnd);
+			obj->Setter(st);
 			this->Push(obj);
+			break;
 		}
 		case 'c': {
 			ContourTrapezoid *obj = new ContourTrapezoid(hdc, hwnd);
+			obj->Setter(st);
 			this->Push(obj);
 			break;
 		}
 		case 'f': {
 			FilledTrapezoid *obj = new FilledTrapezoid(hdc, hwnd);
+			obj->Setter(st);
 			this->Push(obj);
 			break;
 		}
 		case 'p': {
 			PartialTrapezoid *obj = new PartialTrapezoid(st, hdc, hwnd);
+			obj->Setter(st);
 			this->Push(obj);
 			break;
 		}
@@ -81,16 +88,17 @@ template <class T> void Container <T> ::Push(T *obj) {
 	if (!count) {
 		first = new data;
 		first->obj = obj;
+		first->signature = type;
 		last = first;
 	}
 	else {
 		last->next = new data;
-		last->obj = obj;
+		last->next->obj = obj;
+		last->next->signature = type;
 		last->next->prev = last;
 		last = last->next;
 	}
 	++count;
-	last->signature = type;
 }
 
 template <class T> void Container <T> ::FrontPush(T *obj) {
@@ -98,17 +106,18 @@ template <class T> void Container <T> ::FrontPush(T *obj) {
 	if (!count) {
 		first = new data;
 		first->obj = obj;
+		first->signature = type;
 		last = first;
 	}
 	else {
 		data *temp = new data;
 		temp->obj = obj;
+		temp->signature = type;
 		temp->next = first;
 		first->prev = temp;
 		first = temp;
 	}
 	++count;
-	last->signature = type;
 }
 
 template <class T> T& Container <T> ::Pop() {
@@ -136,6 +145,7 @@ template <class T> void Container <T> ::Show(bool direction) const {
 			temp->obj->Getter(std::cout);
 			temp = temp->next;
 		}
+		break;
 	default:
 		temp = last;
 		while (temp != nullptr) {
@@ -143,6 +153,7 @@ template <class T> void Container <T> ::Show(bool direction) const {
 			temp->obj->Getter(std::cout);
 			temp = temp->prev;	
 		}
+		break;
 	}
 }
 
