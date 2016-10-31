@@ -1,5 +1,5 @@
 #include "container.h"
-; //WHAT?!
+
 template <class T> Container <T> ::Container() {
 	count = 0;
 }
@@ -13,7 +13,7 @@ template <class T> Container <T> ::~Container() {
 	}
 }
 
-template <class T> void Container <T> ::Save(std::ofstream &st) {
+template <class T> void Container <T> ::Save(std::ofstream &st) const {
 	data *temp = first;
 	st << count << '\n';
 	while (temp != nullptr) {
