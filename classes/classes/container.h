@@ -28,6 +28,7 @@ public:
 	T& GetElement(size_t i) const;
 	T* PopRem();
 	void Show(bool direction) const;
+	void Draw(size_t i) const;
 	~Container();
 };
 #include "container.cpp"

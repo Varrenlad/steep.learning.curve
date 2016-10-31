@@ -199,6 +199,19 @@ template <class T> T& Container <T> ::GetElement(size_t i) const {
 	return *(temp->obj);
 }
 
+template <class T> void Container <T> ::Draw(size_t i) const {
+	data *temp;
+	if (i > count)
+		return;
+	temp = first;
+	while (temp != nullptr) {
+		--i;
+		if (!i)
+			temp->obj->Draw();
+		temp = temp->next;
+	}
+}
+
 template class Container<Drawable>;
 //template class Container<Background>;
 //template class Container<ContourTrapezoid>;

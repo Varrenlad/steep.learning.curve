@@ -137,8 +137,8 @@ int main() {
 	HWND hwnd = GetConsoleWindow();
 	HDC hdc = GetDC(hwnd);
 	Container<Drawable> ctr;
-	while (pos != 8) {
-		std::cout 
+	while (pos != 9) {
+		std::cout
 			<< "1. Add element\n"
 			<< "2. Remove element\n"
 			<< "3. Show container\n"
@@ -146,7 +146,8 @@ int main() {
 			<< "5. Search figures by point\n"
 			<< "6. Load data from file\n"
 			<< "7. Save data to file\n"
-			<< "8. Exit\n";
+			<< "8. Draw element\n"
+			<< "9. Exit\n";
 		pos = 0;
 		std::cin >> pos;
 		switch (pos) {
@@ -320,6 +321,16 @@ int main() {
 				ctr.Save(st);
 			}
 			break;
+		}
+		case 8: {
+			pos = 0;
+			std::cout << "Enter numeral to draw\n";
+			std::cin >> pos;
+			RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
+			ctr.Draw(pos);
+			std::cin.get();
+			std::cin.get();
+			RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
 		}
 		default:
 			break;
