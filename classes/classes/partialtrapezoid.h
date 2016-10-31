@@ -1,10 +1,13 @@
-#pragma once
+#ifndef PTRAP
+#define PTRAP
 #include "background.h"
 #include "filledtrapezoid.h"
 
 class PartialTrapezoid : public FilledTrapezoid {
 public:
+	PartialTrapezoid(HDC &hdc, HWND &hwnd);
 	PartialTrapezoid(Background &bg, HDC &hdc, HWND hwnd);
+	PartialTrapezoid(std::istream &st, HDC &hdc, HWND hwnd);
 	~PartialTrapezoid();
 	void Draw();
 	void Setter(std::istream &st);
@@ -13,6 +16,7 @@ public:
 	const COLORREF GetPenColour() const;
 	const COLORREF GetBrushColour() const;
 	bool PointInside(POINT p);
+	char GetType() const;
 private:
 	int in_pen_type = 0;
 	int in_brush_type = 0;
@@ -21,3 +25,4 @@ private:
 	COLORREF bgBrush;
 	HBRUSH hbgBrush;
 };
+#endif

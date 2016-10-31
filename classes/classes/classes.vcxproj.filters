@@ -53,9 +53,6 @@
     <ClInclude Include="filledtrapezoid.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="commonfunc.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="container.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>

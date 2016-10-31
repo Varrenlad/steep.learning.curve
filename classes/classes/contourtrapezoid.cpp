@@ -38,17 +38,12 @@ void ContourTrapezoid::Setter(std::istream &st) { ///Four points, no less
 	for (i = 0; i < count_of_p - 1; ++i) {
 		st >> points[i].x >> points[i].y;
 	}
-	if ((this->points[2].y - this->points[3].y) &&
-		(this->points[0].y - this->points[1].y)) {
-		if ((this->points[2].x - this->points[3].x) /
-			(this->points[2].y - this->points[3].y) !=
-			(this->points[0].x - this->points[1].x) /
-			(this->points[0].y - this->points[1].y))
-			throw EXC_F_TR_VL_WRONG;
+	try {
+		this->IsCorrect(points);
 	}
-	else if (this->points[2].y - this->points[3].y !=
-		this->points[0].y - this->points[1].y)
-		throw EXC_F_TR_VL_WRONG;
+	catch (int e) {
+		throw;
+	}
 	basePen = CreatePen(pen_type, pen_width, pen);
 }
 
@@ -99,4 +94,22 @@ float ContourTrapezoid::Signum(POINT p1, POINT p2, POINT p3) {
 
 bool ContourTrapezoid::HasColour(COLORREF c) {
 	return (pen == c);
+}
+
+bool ContourTrapezoid::IsCorrect(POINT *points) const {
+	if ((points[2].y - points[3].y) &&
+		(points[0].y - points[1].y)) {
+		if ((points[2].x - points[3].x) /
+			(points[2].y - points[3].y) !=
+			(points[0].x - points[1].x) /
+			(points[0].y - points[1].y))
+			throw EXC_F_TR_VL_WRONG;
+	}
+	else if (points[2].y - points[3].y !=
+		points[0].y - points[1].y)
+		throw EXC_F_TR_VL_WRONG;
+}
+
+char ContourTrapezoid::GetType() const {
+	return 'c';
 }

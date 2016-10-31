@@ -141,7 +141,7 @@ int main() {
 	int pos = 0;
 	HWND hwnd = GetConsoleWindow();
 	HDC hdc = GetDC(hwnd);
-	Container<Drawable &> ctr;
+	Container<Drawable> ctr;
 	while (pos != 8) {
 		std::cout 
 			<< "1. Add element\n"
@@ -158,8 +158,9 @@ int main() {
 		case 1: {
 			std::cout
 				<< "1. Add ""Background"" type\n"
-				<< "2. Add ""Contoured Trapezoid type\n"
-				<< "3. Add ""Filled Trapezoid type\n";
+				<< "2. Add ""Contoured Trapezoid"" type\n"
+				<< "3. Add ""Filled Trapezoid"" type\n"
+				<< "4. Add ""Partial Trapezoid"" type\n";
 			std::cin >> pos;
 			int place = 0;
 			std::cout
@@ -174,9 +175,9 @@ int main() {
 				Background *obj = new Background(hdc, hwnd);
 				obj->Setter(std::cin);
 				if (place == 1)
-					ctr.Push(*obj);
+					ctr.Push(obj);
 				if (place == 2)
-					ctr.FrontPush(*obj);
+					ctr.FrontPush(obj);
 				break;
 			}
 			case 2: {
@@ -189,9 +190,9 @@ int main() {
 				ContourTrapezoid *obj = new ContourTrapezoid(hdc, hwnd);
 				obj->Setter(std::cin);
 				if (place == 1)
-					ctr.Push(*obj);
+					ctr.Push(obj);
 				if (place == 2)
-					ctr.FrontPush(*obj);
+					ctr.FrontPush(obj);
 				break;
 			}
 			case 3: {
@@ -205,9 +206,25 @@ int main() {
 					<< "C.x C.y D.x D.y\n";
 				obj->Setter(std::cin);
 				if (place == 1)
-					ctr.Push(*obj);
+					ctr.Push(obj);
 				if (place == 2)
-					ctr.FrontPush(*obj);
+					ctr.FrontPush(obj);
+				break;
+			}
+			case 4: {
+				PartialTrapezoid *obj = new PartialTrapezoid(hdc, hwnd);
+				std::cout
+					<< "Setter syntax is:\n"
+					<< "pen_type pen_width brush_type\n"
+					<< "r g b for pen\n"
+					<< "r g b for brush\n"
+					<< "A.x A.y B.x B.y\n"
+					<< "C.x C.y D.x D.y\n";
+				obj->Setter(std::cin);
+				if (place == 1)
+					ctr.Push(obj);
+				if (place == 2)
+					ctr.FrontPush(obj);
 				break;
 			}
 			default:
@@ -226,7 +243,7 @@ int main() {
 				ctr.Pop().Getter(std::cout);
 				break;
 			case 2:
-				ctr.PopRem().Getter(std::cout);
+				ctr.PopRem()->Getter(std::cout);
 				break;
 			default:
 				break;
@@ -295,7 +312,7 @@ int main() {
 			std::cin >> name;
 			st.open(name, std::ifstream::in);
 			if (!(st.rdstate() & std::ios::failbit)) {
-				ctr.Load(st);
+				ctr.Load(st, hdc, hwnd);
 			}
 			break;
 		}

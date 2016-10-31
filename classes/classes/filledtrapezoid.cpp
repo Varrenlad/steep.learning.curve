@@ -1,5 +1,5 @@
 #include "filledtrapezoid.h"
-#include "commonfunc.h"
+//#include "commonfunc.h"
 
 FilledTrapezoid::FilledTrapezoid(HDC &hdc, HWND hwnd) : ContourTrapezoid(hdc, hwnd) {
 };
@@ -40,18 +40,12 @@ void FilledTrapezoid::Setter(std::istream &st) { ///Four points, no less
 	for (i = 0; i < count_of_p; ++i) {
 		st >> points[i].x >> points[i].y;
 	}
-	if ((this->points[2].y - this->points[3].y) &&
-		(this->points[0].y - this->points[1].y)){
-		if ((this->points[2].x - this->points[3].x) /
-			(this->points[2].y - this->points[3].y) !=
-			(this->points[0].x - this->points[1].x) /
-			(this->points[0].y - this->points[1].y))
-			throw EXC_F_TR_VL_WRONG;
+	try {
+		this->IsCorrect(points);
 	}
-	else if (this->points[2].y - this->points[3].y !=
-			 this->points[0].y - this->points[1].y)
-		throw EXC_F_TR_VL_WRONG;
-
+	catch (int e) {
+		throw;
+	}
 	basePen = CreatePen(pen_type, pen_width, pen);
 	baseBrush = *CreateBrush(brush, brush_type);
 }
@@ -74,16 +68,6 @@ void FilledTrapezoid::Getter(std::ostream &st) {
 	}
 }
 
-void FilledTrapezoid::Draw(FilledTrapezoid &ft) {
-	int i;
-	for (i = 0; i < count_of_p; ++i) {
-		if ((GetPixel(hdc, points[i].x, points[i].y) != ft.GetPenColour()) &&
-			(GetPixel(hdc, points[i].x, points[i].y) != ft.GetBrushColour()))
-			throw EXC_F_TR_VL_WRONG;
-	}
-	this->Draw();
-}
-
 const COLORREF FilledTrapezoid::GetPenColour() const {
 	return pen;
 }
@@ -92,17 +76,19 @@ const COLORREF FilledTrapezoid::GetBrushColour() const {
 	return brush;
 }
 
-void FilledTrapezoid::BorderCheck() {
-	RECT rt;
-	int i;
-	GetClientRect(hwnd_i, &rt);
-	for (i = 0; i < count_of_p; ++i) {
-		if (points[i].x < 0 || points[i].x > rt.right ||
-			points[i].y < 0 || points[i].y > rt.bottom)
-			throw EXC_OOB;
-	}
-}
-
 bool FilledTrapezoid::HasColour(COLORREF c) {
 	return (pen == c || brush == c);
+}
+
+char FilledTrapezoid::GetType() const {
+	return 'f';
+}
+
+HBRUSH* FilledTrapezoid::CreateBrush(COLORREF color, int type) {
+	HBRUSH *retval = new HBRUSH;
+	if (!type)
+		*retval = CreateSolidBrush(color);
+	else
+		*retval = CreateHatchBrush(type, color);
+	return retval;
 }

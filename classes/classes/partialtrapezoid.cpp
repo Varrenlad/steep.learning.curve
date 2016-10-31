@@ -1,7 +1,25 @@
 #include "partialtrapezoid.h"
+//#include "commonfunc.h"
+
+PartialTrapezoid::PartialTrapezoid(HDC &hdc, HWND &hwnd) : FilledTrapezoid(hdc, hwnd) {
+	bgBrush = RGB(0, 0, 0);
+	hbgBrush = CreateSolidBrush(bgBrush);
+}
 
 PartialTrapezoid::PartialTrapezoid(Background &bg, HDC &hdc, HWND hwnd) : FilledTrapezoid(hdc, hwnd) {
 	bgBrush = bg.GetColour();
+	hbgBrush = CreateSolidBrush(bgBrush);
+}
+
+PartialTrapezoid::PartialTrapezoid(std::istream &st, HDC &hdc, HWND hwnd) : FilledTrapezoid(hdc, hwnd) {
+	int r, g, b;
+	st >> r >> g >> b;
+	st.get();
+	if (r < 0 || r > 255 ||
+		g < 0 || g > 255 ||
+		b < 0 || b > 255)
+		throw EXC_F_TR_VL_WRONG;
+	bgBrush = RGB(r, g, b);
 	hbgBrush = CreateSolidBrush(bgBrush);
 }
 
@@ -41,32 +59,16 @@ void PartialTrapezoid::Setter(std::istream &st) {
 	for (i = 0; i < count_of_p; ++i) {
 		st >> points[i].x >> points[i].y;
 	}
-	if ((this->points[2].y - this->points[3].y) &&
-		(this->points[0].y - this->points[1].y)) {
-		if ((this->points[2].x - this->points[3].x) /
-			(this->points[2].y - this->points[3].y) !=
-			(this->points[0].x - this->points[1].x) /
-			(this->points[0].y - this->points[1].y))
-			throw EXC_F_TR_VL_WRONG;
-	}
-	else if (this->points[2].y - this->points[3].y !=
-		this->points[0].y - this->points[1].y)
-		throw EXC_F_TR_VL_WRONG;
 	for (i = 0; i < count_of_p; ++i) {
 		st >> in_points[i].x >> in_points[i].y;
 	}
-	if ((this->in_points[2].y - this->in_points[3].y) &&
-		(this->in_points[0].y - this->in_points[1].y)) {
-		if ((this->in_points[2].x - this->in_points[3].x) /
-			(this->in_points[2].y - this->in_points[3].y) !=
-			(this->in_points[0].x - this->in_points[1].x) /
-			(this->in_points[0].y - this->in_points[1].y))
-			throw EXC_F_TR_VL_WRONG;
+	try {
+		this->IsCorrect(points);
+		this->IsCorrect(in_points);
 	}
-	else if (this->in_points[2].y - this->in_points[3].y !=
-		this->in_points[0].y - this->in_points[1].y)
-		throw EXC_F_TR_VL_WRONG;
-
+	catch (int e) {
+		throw;
+	}
 	basePen = CreatePen(pen_type, pen_width, pen);
 	baseBrush = *CreateBrush(brush, brush_type);
 }
@@ -74,6 +76,8 @@ void PartialTrapezoid::Setter(std::istream &st) {
 void PartialTrapezoid::Getter(std::ostream &st) {
 	int i;
 	try {
+		st << (int)GetRValue(bgBrush) << ' ' << (int)GetGValue(bgBrush) << ' '
+			<< (int)GetBValue(bgBrush) << '\n';
 		st << pen_type << ' ' << pen_width << ' ' << brush_type << '\n';
 		st << (int)GetRValue(pen) << ' ' << (int)GetGValue(pen) << ' '
 			<< (int)GetBValue(pen) << '\n';
@@ -115,7 +119,6 @@ bool PartialTrapezoid::PointInside(POINT p) {
 	b3 = Signum(p, in_points[3], in_points[1]) < 0.0f;
 	if (res && ((b1 == b2) && (b2 == b3)))  
 		return false; //if point is inside empty area
-	bool b1, b2, b3, res;
 	b1 = Signum(p, points[0], points[1]) < 0.0f;
 	b2 = Signum(p, points[1], points[3]) < 0.0f;
 	b3 = Signum(p, points[3], points[0]) < 0.0f;
@@ -124,4 +127,8 @@ bool PartialTrapezoid::PointInside(POINT p) {
 	b2 = Signum(p, points[2], points[3]) < 0.0f;
 	b3 = Signum(p, points[3], points[1]) < 0.0f;
 	return res && ((b1 == b2) && (b2 == b3));
+}
+
+char PartialTrapezoid::GetType() const {
+	return 'p';
 }

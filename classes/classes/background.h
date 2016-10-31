@@ -11,6 +11,7 @@ public:
 	bool PointInside(POINT p);
 	bool HasColour(COLORREF c);
 	const COLORREF GetColour() const;
+	char GetType() const;
 	~Background();
 private:
 	void Update(HWND hwnd);

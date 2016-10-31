@@ -58,3 +58,7 @@ bool Background::HasColour(COLORREF c) {
 const COLORREF Background::GetColour() const {
 	return bgc;
 }
+
+char Background::GetType() const {
+	return 'b';
+}

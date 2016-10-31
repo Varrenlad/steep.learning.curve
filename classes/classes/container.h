@@ -3,14 +3,14 @@
 #include "background.h"
 #include "filledtrapezoid.h"
 #include "contourtrapezoid.h"
-#include "drawable.h"
+#include "partialtrapezoid.h"
 
 template <class T> class Container {
 	struct data {
 		data *prev = nullptr;
 		T *obj;
 		data *next = nullptr;
-		char signature = 'd';
+		char signature = '0';
 	};
 protected:
 	size_t count;
@@ -20,14 +20,14 @@ public:
 	Container();
 	~Container();
 	void Save(std::ofstream &st);
-	void Load(std::ifstream &st);
+	void Load(std::ifstream &st, HDC hdc, HWND hwnd);
 	void FrontPush(T *obj);
 	void Push(T *obj);
 	list *Search(POINT p);
 	list *Search(COLORREF c);
 	T& Pop();
 	T& GetElement(size_t i) const;
-	T& PopRem();
+	T* PopRem();
 	void Show(bool direction) const;
 }
 #include "container.cpp"

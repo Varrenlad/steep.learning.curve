@@ -15,63 +15,114 @@ template <class T> Container <T> ::~Container() {
 
 template <class T> void Container <T> ::Save(std::ofstream &st) {
 	data *temp = first;
+	st << count << '\n';
 	while (temp != nullptr) {
-		temp->obj.Getter(st);
+		st << temp->signature;
 		temp = temp->next;
+	}
+	st << '\n';
+	temp = first;
+	while (temp != nullptr) {
+		switch (temp->signature) {
+		case 'b':
+			(dynamic_cast<Background *> (temp->obj))->Getter(st);
+			break;
+		case 'c':
+			(dynamic_cast<ContourTrapezoid *> (temp->obj))->Getter(st);
+			break;
+		case 'f':
+			(dynamic_cast<FilledTrapezoid *> (temp->obj))->Getter(st);
+			break;
+		case 'p':
+			(dynamic_cast<PartialTrapezoid *> (temp->obj))->Getter(st);
+			break;
+		default:
+			break;
+		}
 	}
 }
 
-template <class T> void Container <T> ::Load(std::ifstream &st) {
+template <class T> void Container <T> ::Load(std::ifstream &st, HDC hdc, HWND hwnd) {
 	data *temp = first;
-/*	if()
-	while (st.peek() != EOF) {
-		try {
-			temp->obj = new T;
-			temp->obj.Setter(st);
-			temp = temp->next;
+	size_t i = 0;
+	st >> this->count;
+	char *type = new char[this->count + 2];
+	st.readsome(type, count + 1);
+	st.get();
+	while (i < count) {
+		switch (type[i]) {
+		case 'b': {
+			Background *obj = new Background(hdc, hwnd);
+			this->Push(obj);
 		}
-		catch (int e) {
-			throw;
+		case 'c': {
+			ContourTrapezoid *obj = new ContourTrapezoid(hdc, hwnd);
+			this->Push(obj);
+			break;
 		}
-	}*/
+		case 'f': {
+			FilledTrapezoid *obj = new FilledTrapezoid(hdc, hwnd);
+			this->Push(obj);
+			break;
+		}
+		case 'p': {
+			PartialTrapezoid *obj = new PartialTrapezoid(st, hdc, hwnd);
+			this->Push(obj);
+			break;
+		}
+		default:
+			break;
+		}
+	}
 }
 
-template <class T> void Container <T> ::Push(T &obj) {
+template <class T> void Container <T> ::Push(T *obj) {
+	char type = obj->GetType();
 	if (!count) {
-		first = new data(obj);
+		first = new data;
+		first->obj = obj;
 		last = first;
 	}
 	else {
-		last->next = new data(obj);
+		last->next = new data;
+		last->obj = obj;
 		last->next->prev = last;
 		last = last->next;
 	}
 	++count;
+	last->signature = type;
 }
 
-template <class T> void Container <T> ::FrontPush(T &obj) {
+template <class T> void Container <T> ::FrontPush(T *obj) {
+	char type = obj->GetType();
 	if (!count) {
-		first = new data(obj);
+		first = new data;
+		first->obj = obj;
 		last = first;
 	}
 	else {
-		data *temp = new data(obj);
+		data *temp = new data;
+		temp->obj = obj;
 		temp->next = first;
 		first->prev = temp;
 		first = temp;
 	}
 	++count;
+	last->signature = type;
 }
 
 template <class T> T& Container <T> ::Pop() {
-	return last->obj;
+	if (count)
+		return *(last->obj);
+	else throw EXC_NOT_IN_DC;
 }
 
-template <class T> T& Container <T> ::PopRem() {
-	T& temp = last->obj;
-	--count;
-	delete last;
-	return temp;
+template <class T> T* Container <T> ::PopRem() {
+	T* retval = last->obj;
+	last = last->prev;
+	delete last->next;
+	last->next = nullptr;
+	return retval;
 }
 
 template <class T> void Container <T> ::Show(bool direction) const {
@@ -81,13 +132,15 @@ template <class T> void Container <T> ::Show(bool direction) const {
 	case true:
 		temp = first;
 		while (temp != nullptr) {
-			temp->obj.Getter(std::cout);
+			std::cout << temp->obj->GetType();
+			temp->obj->Getter(std::cout);
 			temp = temp->next;
 		}
-	case false:
+	default:
 		temp = last;
 		while (temp != nullptr) {
-			temp->obj.Getter(std::cout);
+			std::cout << temp->obj->GetType();
+			temp->obj->Getter(std::cout);
 			temp = temp->prev;	
 		}
 	}
@@ -98,7 +151,7 @@ template <class T> list *Container <T> ::Search(POINT p) {
 	int i = 0;
 	data *temp = first;
 	while (temp != nullptr) {
-		if (temp->obj.PointInside(p)) {
+		if (temp->obj->PointInside(p)) {
 			templ->i = i;
 			templ->next = new list;
 			templ = templ->next;
@@ -113,7 +166,7 @@ template <class T> list *Container <T> ::Search(COLORREF c) {
 	int i = 0;
 	data *temp = first;
 	while (temp != nullptr) {
-		if (temp->obj.HasColour(c)) {
+		if (temp->obj->HasColour(c)) {
 			templ->i = i;
 			templ->next = new list;
 			templ = templ->next;
@@ -132,10 +185,11 @@ template <class T> T& Container <T> ::GetElement(size_t i) const {
 		temp = temp->next;
 		++iter;
 	}
-	return temp->obj;
+	return *(temp->obj);
 }
 
 template class Container<Drawable>;
-template class Container<Background>;
-template class Container<ContourTrapezoid>;
-template class Container<FilledTrapezoid>;
+//template class Container<Background>;
+//template class Container<ContourTrapezoid>;
+//template class Container<FilledTrapezoid>;
+//template class Container<PartialTrapezoid>;
