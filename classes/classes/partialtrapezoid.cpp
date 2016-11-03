@@ -2,25 +2,8 @@
 //#include "commonfunc.h"
 
 PartialTrapezoid::PartialTrapezoid(HDC &hdc, HWND &hwnd) : FilledTrapezoid(hdc, hwnd) {
-	bgBrush = RGB(0, 0, 0);
-	hbgBrush = CreateSolidBrush(bgBrush);
-}
-
-PartialTrapezoid::PartialTrapezoid(Background &bg, HDC &hdc, HWND hwnd) : FilledTrapezoid(hdc, hwnd) {
-	bgBrush = bg.GetColour();
-	hbgBrush = CreateSolidBrush(bgBrush);
-}
-
-PartialTrapezoid::PartialTrapezoid(std::istream &st, HDC &hdc, HWND hwnd) : FilledTrapezoid(hdc, hwnd) {
-	int r, g, b;
-	st >> r >> g >> b;
-	st.get();
-	if (r < 0 || r > 255 ||
-		g < 0 || g > 255 ||
-		b < 0 || b > 255)
-		throw EXC_F_TR_VL_WRONG;
-	bgBrush = RGB(r, g, b);
-	hbgBrush = CreateSolidBrush(bgBrush);
+	//bgBrush = RGB(0, 0, 0);
+	//hbgBrush = CreateSolidBrush(bgBrush);
 }
 
 PartialTrapezoid::~PartialTrapezoid() {
@@ -56,6 +39,13 @@ void PartialTrapezoid::Setter(std::istream &st) {
 		b < 0 || b > 255)
 		throw EXC_F_TR_VL_WRONG;
 	brush = RGB(r, g, b);
+	st >> r >> g >> b;
+	if (r < 0 || r > 255 ||
+		g < 0 || g > 255 ||
+		b < 0 || b > 255)
+		throw EXC_F_TR_VL_WRONG;
+	bgBrush = RGB(r, g, b);
+	hbgBrush = CreateSolidBrush(bgBrush);
 	for (i = 0; i < count_of_p; ++i) {
 		st >> points[i].x >> points[i].y;
 	}
@@ -83,6 +73,8 @@ void PartialTrapezoid::Getter(std::ostream &st) {
 			<< (int)GetBValue(pen) << '\n';
 		st << (int)GetRValue(brush) << ' ' << (int)GetGValue(brush) << ' '
 			<< (int)GetBValue(brush) << '\n';
+		st << (int)GetRValue(bgBrush) << ' ' << (int)GetGValue(bgBrush) << ' '
+			<< (int)GetBValue(bgBrush) << '\n';
 		for (i = 0; i < count_of_p; ++i) {
 			st << points[i].x << ' ' << points[i].y << '\n';
 		}

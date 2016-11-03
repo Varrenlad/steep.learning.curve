@@ -6,8 +6,6 @@
 class PartialTrapezoid : public FilledTrapezoid {
 public:
 	PartialTrapezoid(HDC &hdc, HWND &hwnd);
-	PartialTrapezoid(Background &bg, HDC &hdc, HWND hwnd);
-	PartialTrapezoid(std::istream &st, HDC &hdc, HWND hwnd);
 	~PartialTrapezoid();
 	void Draw();
 	void Setter(std::istream &st);

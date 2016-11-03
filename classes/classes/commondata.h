@@ -1,6 +1,8 @@
 #ifndef CDAT
 #define CDAT
 
+#define TYPES
+
 #define EXC_BG_VL_WRONG 0
 #define EXC_C_TR_VL_WRONG 1
 #define EXC_F_TR_VL_WRONG 2
@@ -16,6 +18,7 @@
 #include <vector>
 #include <Windows.h>
 #include <windowsx.h>
+#include <cstdlib>
 
 struct list {
 	int i;

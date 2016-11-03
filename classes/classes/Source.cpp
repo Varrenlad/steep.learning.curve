@@ -1,13 +1,13 @@
 #include "container.h"
 #define INPUT_FILE "input.txt"
-/*
+
 void save_data(Drawable *obj, std::ofstream &ofstr);
 void draw(std::vector<Drawable *> objects, HDC hdc);
 
 int main() {
 	std::ifstream ifstr;
 	std::ofstream ofstr;
-	std::vector<Drawable *> objects;
+	Container<Drawable> objects;
 	HWND hwnd = GetConsoleWindow();
 	HDC hdc = GetDC(hwnd);
 	unsigned int i, type;
@@ -20,28 +20,26 @@ int main() {
 		return -1;
 	}
 	ifstr >> type;
-	objects.push_back(bg);
+	objects.Push(bg);
 	switch (type) {
 	case 1:
 		{	ContourTrapezoid *t = new ContourTrapezoid(hdc, hwnd);
-		objects.push_back(t);
+		objects.Push(t);
 		break; }
 	case 2:
 		{	FilledTrapezoid *t = new FilledTrapezoid(hdc, hwnd);
-		objects.push_back(t);
+		objects.Push(t);
 		break; }
 	case 3:
-		{	FilledTrapezoid *in = new FilledTrapezoid(hdc, hwnd);
-		FilledTrapezoid *out = new FilledTrapezoid(hdc, hwnd);
-		objects.push_back(out);
-		objects.push_back(in);
+		{	PartialTrapezoid *t = new PartialTrapezoid(hdc, hwnd);
+		objects.Push(t);
 		break; }
 	default:
 		TextOutA(hdc, 0, 0, "Couldn't find type specializer, aborting", 41);
 		getchar();
 		exit(-1);
 	}
-	for (i = 0; i < objects.size(); ++i) {
+	for (i = 0; i < objects.Size(); ++i) {
 		try {
 			objects[i]->Setter(ifstr);
 		}
@@ -64,7 +62,7 @@ int main() {
 	i = getchar();
 	if (i != 'n' || i != 'N') {
 		ofstr << type << '\n';
-		for (i = 0; i < objects.size(); ++i) {
+		/*for (i = 0; i < objects.Size(); ++i) {
 			try {
 				save_data(objects[i], ofstr);
 			}
@@ -74,21 +72,27 @@ int main() {
 				else
 					TextOutA(hdc, 0, 0, "Unknown error while saving data", 32);
 			}
+		}*/
+		try {
+			objects.Save(ofstr);
+		}
+		catch (int e) {
+			if (e == EXC_WR_FAIL)
+				TextOutA(hdc, 0, 0, "Unable to write data to file", 29);
+			else
+				TextOutA(hdc, 0, 0, "Unknown error while saving data", 32);
 		}
 	}
 	ofstr.close();
 	return 0;
 }
 
-void draw(std::vector<Drawable *> objects, HDC hdc) {
+void draw(Container<Drawable> objects, HDC hdc) {
 	unsigned int c, i;
 	do {
-		for (i = 0; i < objects.size(); ++i) {
+		for (i = 0; i < objects.Size(); ++i) {
 			try {
-				if (i != 2)
-					objects[i]->Draw();
-				else dynamic_cast<FilledTrapezoid *> (objects[i])->Draw(
-					*dynamic_cast<FilledTrapezoid *> (objects[i - 1]));
+				objects.Draw(i);
 			}
 			catch (int e) {
 				if (e == EXC_OOB)
@@ -101,7 +105,8 @@ void draw(std::vector<Drawable *> objects, HDC hdc) {
 		c = _getch();
 		if (c == 0 || c == 224) {
 			c = _getch();
-			for (i = 1; i < objects.size(); ++i) {
+			for (i = 0; i < objects.Size(); ++i) {
+				if (objects.GetElement(i).GetType() != 'b')
 				switch (c) {
 				case 72:
 					objects[i]->Move(0, -10);
@@ -130,9 +135,9 @@ void save_data(Drawable *obj, std::ofstream &ofstr) {
 	catch (int e) {
 		throw;
 	}
-}*/
+}
 
-int main() {
+/*int main() {
 	int pos = 0;
 	HWND hwnd = GetConsoleWindow();
 	HDC hdc = GetDC(hwnd);
@@ -326,7 +331,9 @@ int main() {
 			pos = 0;
 			std::cout << "Enter numeral to draw\n";
 			std::cin >> pos;
-			RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
+			system("cls");
+			//RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
+		//	UpdateWindow(hwnd);
 			ctr.Draw(pos);
 			std::cin.get();
 			std::cin.get();
@@ -337,4 +344,4 @@ int main() {
 		}
 	}
 	return 0;
-}
+}*/

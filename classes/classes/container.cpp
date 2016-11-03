@@ -15,6 +15,16 @@ template <class T> Container <T> ::~Container() {
 
 template <class T> void Container <T> ::Save(std::ofstream &st) const {
 	data *temp = first;
+	temp = first;
+	while (temp != nullptr) {
+		(temp->obj)->Getter(st);
+		temp = temp->next;
+	}
+	delete temp;
+}
+
+template <> void Container <Drawable> ::Save(std::ofstream &st) const {
+	data *temp = first;
 	st << count << '\n';
 	while (temp != nullptr) {
 		st << temp->signature;
@@ -41,10 +51,16 @@ template <class T> void Container <T> ::Save(std::ofstream &st) const {
 		}
 		temp = temp->next;
 	}
+	delete temp;
 }
 
 template <class T> void Container <T> ::Load(std::ifstream &st, HDC hdc, HWND hwnd) {
-	data *temp = first;
+	T *obj = new T(hdc, hwnd);
+	obj->Setter(st);
+	this->Push(obj);
+}
+
+template <> void Container <Drawable> ::Load(std::ifstream &st, HDC hdc, HWND hwnd) {
 	size_t i;
 	st >> i;
 	st.get();
@@ -72,7 +88,7 @@ template <class T> void Container <T> ::Load(std::ifstream &st, HDC hdc, HWND hw
 			break;
 		}
 		case 'p': {
-			PartialTrapezoid *obj = new PartialTrapezoid(st, hdc, hwnd);
+			PartialTrapezoid *obj = new PartialTrapezoid(hdc, hwnd);
 			obj->Setter(st);
 			this->Push(obj);
 			break;
@@ -212,8 +228,14 @@ template <class T> void Container <T> ::Draw(size_t i) const {
 	}
 }
 
+template <class T> int Container<T> ::Size() {
+	return count;
+}
+
 template class Container<Drawable>;
-//template class Container<Background>;
-//template class Container<ContourTrapezoid>;
-//template class Container<FilledTrapezoid>;
-//template class Container<PartialTrapezoid>;
+#ifdef TYPES
+template class Container<Background>;
+template class Container<ContourTrapezoid>;
+template class Container<FilledTrapezoid>;
+template class Container<PartialTrapezoid>;
+#endif

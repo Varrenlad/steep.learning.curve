@@ -22,6 +22,7 @@ public:
 	void Load(std::ifstream &st, HDC hdc, HWND hwnd);
 	void FrontPush(T *obj);
 	void Push(T *obj);
+	int Size();
 	list *Search(POINT p);
 	list *Search(COLORREF c);
 	T& Pop();
