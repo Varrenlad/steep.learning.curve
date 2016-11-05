@@ -12,12 +12,12 @@ public:
 	virtual void Getter(std::ostream &st) = 0;
 	virtual bool PointInside(POINT p) = 0;
 	virtual bool HasColour(COLORREF c) = 0;
+	Drawable(const Drawable& that) = delete;
 	virtual ~Drawable();
 protected:
 	POINT *points;
 	HDC hdc;
-	int count_of_p;
-	int pen_width;
+	size_t count_of_p;
 	HPEN basePen;
 	HBRUSH baseBrush;
 	HWND hwnd_i;

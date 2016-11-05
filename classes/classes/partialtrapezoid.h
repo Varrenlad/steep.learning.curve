@@ -11,16 +11,12 @@ public:
 	void Setter(std::istream &st);
 	void Getter(std::ostream &st);
 	bool HasColour(COLORREF c);
-	const COLORREF GetPenColour() const;
-	const COLORREF GetBrushColour() const;
 	bool PointInside(POINT p);
 	char GetType() const;
 private:
-	int in_pen_type = 0;
-	int in_brush_type = 0;
+	unsigned short int in_pen_type = 0;
+	unsigned short int in_brush_type = 0;
 	POINT *in_points;
-	COLORREF brush;
-	COLORREF bgBrush;
 	HBRUSH hbgBrush;
 };
 #endif

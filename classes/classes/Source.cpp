@@ -1,10 +1,11 @@
 #include "container.h"
 #define INPUT_FILE "input.txt"
 
-void save_data(Drawable *obj, std::ofstream &ofstr);
-void draw(std::vector<Drawable *> objects, HDC hdc);
+//void save_data(Drawable *obj, std::ofstream &ofstr);
+void draw(Container<Drawable> objects, HDC hdc);
 
 int main() {
+	char filename[FILENAME_MAX];
 	std::ifstream ifstr;
 	std::ofstream ofstr;
 	Container<Drawable> objects;
@@ -12,28 +13,33 @@ int main() {
 	HDC hdc = GetDC(hwnd);
 	unsigned int i, type;
 	Background *bg = new Background(hdc, hwnd);
-	ifstr.open(INPUT_FILE, std::ifstream::in);
-	if (ifstr.rdstate() & std::ios::failbit ||
-		ofstr.rdstate() & std::ios::failbit) {
-		TextOutA(hdc, 0, 0, "Couldn't find file, aborting", 29);
-		getchar();
-		return -1;
+	while (true) {
+		std::cin >> filename;
+		ifstr.open(filename, std::ifstream::in);
+		if (ifstr.rdstate() & std::ios::failbit) {
+			TextOutA(hdc, 0, 0, "Couldn't find file, aborting", 29);
+			getchar();
+		}
+		else break;
 	}
 	ifstr >> type;
 	objects.Push(bg);
 	switch (type) {
-	case 1:
-		{	ContourTrapezoid *t = new ContourTrapezoid(hdc, hwnd);
-		objects.Push(t);
-		break; }
-	case 2:
-		{	FilledTrapezoid *t = new FilledTrapezoid(hdc, hwnd);
-		objects.Push(t);
-		break; }
-	case 3:
-		{	PartialTrapezoid *t = new PartialTrapezoid(hdc, hwnd);
-		objects.Push(t);
-		break; }
+	case 1: {	
+	ContourTrapezoid *t = new ContourTrapezoid(hdc, hwnd);
+	objects.Push(t);
+	break; 
+	}
+	case 2: {
+	FilledTrapezoid *t = new FilledTrapezoid(hdc, hwnd);
+	objects.Push(t);
+	break; 
+	}
+	case 3:	{
+	PartialTrapezoid *t = new PartialTrapezoid(hdc, hwnd);
+	objects.Push(t);
+	break; 
+	}
 	default:
 		TextOutA(hdc, 0, 0, "Couldn't find type specializer, aborting", 41);
 		getchar();
@@ -41,38 +47,41 @@ int main() {
 	}
 	for (i = 0; i < objects.Size(); ++i) {
 		try {
-			objects[i]->Setter(ifstr);
+			objects[i].Setter(ifstr);
 		}
 		catch (int e) {
-			if (e == EXC_BG_VL_WRONG) 
+			if (e == EXC_BG_VL_WRONG)
 				TextOutA(hdc, 0, 0, "Wrong background colour data", 29);
 			if (e == EXC_C_TR_VL_WRONG)
 				TextOutA(hdc, 0, 0, "Wrong contour trapezoid data", 29);
 			if (e == EXC_F_TR_VL_WRONG)
 				TextOutA(hdc, 0, 0, "Wrong filled trapezoid data", 28);
+			if (e == EXC_P_TR_VL_WRONG)
+				TextOutA(hdc, 0, 0, "Wrong partial trapezoid data", 29);
 			getchar();
 			exit(-1);
 		}
 	}
 	ifstr.sync();
 	ifstr.close();
-	ofstr.open(INPUT_FILE, std::ofstream::out);
 	draw(objects, hdc);
+	ofstr.open(filename, std::ofstream::out);
 	TextOutA(hdc, 0, 0, "Do you want to save current data? Y/n\n", 39);
 	i = getchar();
 	if (i != 'n' || i != 'N') {
 		ofstr << type << '\n';
-		/*for (i = 0; i < objects.Size(); ++i) {
+		//for (i = 0; i < objects.Size(); ++i) {
 			try {
-				save_data(objects[i], ofstr);
+				objects.Save(ofstr);
+				//save_data(objects[i], ofstr);
 			}
 			catch (int e) {
 				if (e == EXC_WR_FAIL)
 					TextOutA(hdc, 0, 0, "Unable to write data to file", 29);
 				else
 					TextOutA(hdc, 0, 0, "Unknown error while saving data", 32);
-			}
-		}*/
+			//}
+		}
 		try {
 			objects.Save(ofstr);
 		}
@@ -97,7 +106,7 @@ void draw(Container<Drawable> objects, HDC hdc) {
 			catch (int e) {
 				if (e == EXC_OOB)
 					TextOutA(hdc, 0, 0, "Unable to draw: window is too small", 36);
-				else if (e == EXC_F_TR_VL_WRONG)
+				else if (e == EXC_P_TR_VL_WRONG)
 					TextOutA(hdc, 0, 16, "Couldn't draw inner trapezoid", 30);
 				else TextOutA(hdc, 0, 32, "Unknown exception while drawing objects", 40);
 				}
@@ -106,19 +115,19 @@ void draw(Container<Drawable> objects, HDC hdc) {
 		if (c == 0 || c == 224) {
 			c = _getch();
 			for (i = 0; i < objects.Size(); ++i) {
-				if (objects.GetElement(i).GetType() != 'b')
+				if (objects[i].GetType() != 'b')
 				switch (c) {
 				case 72:
-					objects[i]->Move(0, -10);
+					objects[i].Move(0, -10);
 					break;
 				case 80:
-					objects[i]->Move(0, 10);
+					objects[i].Move(0, 10);
 					break;
 				case 75:
-					objects[i]->Move(-10, 0);
+					objects[i].Move(-10, 0);
 					break;
 				case 77:
-					objects[i]->Move(10, 0);
+					objects[i].Move(10, 0);
 					break;
 				default:
 					break;
@@ -126,15 +135,6 @@ void draw(Container<Drawable> objects, HDC hdc) {
 			}
 		}
 	} while (c != 27);
-}
-
-void save_data(Drawable *obj, std::ofstream &ofstr) {
-	try {
-		obj->Getter(ofstr);
-	}
-	catch (int e) {
-		throw;
-	}
 }
 
 /*int main() {

@@ -1,6 +1,9 @@
 #include "contourtrapezoid.h"
 
 ContourTrapezoid::ContourTrapezoid(HDC &hdc, HWND hwnd) : Drawable(4, hdc) {
+	pen_type = 0;
+	pen_width = 5;
+	pen = RGB(0, 0, 0);
 	hwnd_i = hwnd;
 };
 
@@ -26,48 +29,25 @@ void ContourTrapezoid::Draw() {
 }
 
 void ContourTrapezoid::Setter(std::istream &st) { ///Four points, no less
-	int i;
 	st >> pen_type >> pen_width;
-	int r, g, b;
-	st >> r >> g >> b;
-	if (r < 0 || r > 255 ||
-		g < 0 || g > 255 ||
-		b < 0 || b > 255)
+	if (this->LoadC(&pen, st))
 		throw EXC_C_TR_VL_WRONG;
-	else pen = RGB(r, g, b);
-	for (i = 0; i < count_of_p - 1; ++i) {
-		st >> points[i].x >> points[i].y;
-	}
-	try {
-		this->IsCorrect(points);
-	}
-	catch (int e) {
-		throw;
-	}
+	if (this->LoadP(st, &points))
+		throw EXC_C_TR_VL_WRONG;
 	basePen = CreatePen(pen_type, pen_width, pen);
 }
 
 void ContourTrapezoid::Getter(std::ostream &st) {
-	int i;
-	try {
-		st << pen_type << ' ' << pen_width << '\n';
-		st.flush();
-		st << (int)GetRValue(pen) << ' ' << (int)GetGValue(pen) << ' '
-			<< (int)GetBValue(pen) << '\n';
-		st.flush();
-		for (i = 0; i < count_of_p - 1; ++i) {
-			st << points[i].x << ' ' << points[i].y << '\n';
-			st.flush();
-		}
-	}
-	catch (int e) {
-		throw;
-	}
+	if (st.rdstate() & std::ios::failbit)
+		throw EXC_WR_FAIL;
+	st << pen_type << ' ' << pen_width << '\n';
+	this->SaveC(pen, st);
+	this->SaveP(st, points);
 }
 
 void ContourTrapezoid::BorderCheck() {
 	RECT rt;
-	int i;
+	size_t i;
 	GetClientRect(hwnd_i, &rt);
 	for (i = 0; i < count_of_p; ++i) {
 		if (points[i].x < 0 || points[i].x > rt.right ||
@@ -88,7 +68,7 @@ bool ContourTrapezoid::PointInside(POINT p) {
 	return res && ((b1 == b2) && (b2 == b3));
 }
 
-float ContourTrapezoid::Signum(POINT p1, POINT p2, POINT p3) {
+double ContourTrapezoid::Signum(POINT p1, POINT p2, POINT p3) {
 	return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
 }
 
@@ -96,20 +76,52 @@ bool ContourTrapezoid::HasColour(COLORREF c) {
 	return (pen == c);
 }
 
-void ContourTrapezoid::IsCorrect(POINT *points) const {
-	if ((points[2].y - points[3].y) &&
-		(points[0].y - points[1].y)) {
-		if ((points[2].x - points[3].x) /
-			(points[2].y - points[3].y) !=
-			(points[0].x - points[1].x) /
-			(points[0].y - points[1].y))
-			throw EXC_F_TR_VL_WRONG;
-	}
-	else if (points[2].y - points[3].y !=
-		points[0].y - points[1].y)
-		throw EXC_F_TR_VL_WRONG;
-}
-
 char ContourTrapezoid::GetType() const {
 	return 'c';
+}
+
+void ContourTrapezoid::SaveC(COLORREF &cl, std::ostream &st) {
+	st << (int)GetRValue(cl) << ' ' << (int)GetGValue(cl) << ' '
+		<< (int)GetBValue(cl) << '\n';
+	st.flush();
+}
+
+void ContourTrapezoid::SaveP(std::ostream &st, POINT *p) const {
+	size_t i;
+	for (i = 0; i < count_of_p; ++i) {
+		st << p[i].x << ' ' << p[i].y << '\n';
+	}
+	st.flush();
+}
+
+bool ContourTrapezoid::LoadP(std::istream &st, POINT **p) const {
+	size_t i;
+	for (i = 0; i < count_of_p; ++i) {
+		st >> (*p)[i].x >> (*p)[i].y;
+	}
+	st.get();
+	//check data
+	if (((*p)[2].y - (*p)[3].y) &&
+		((*p)[0].y - (*p)[1].y)) {
+		if (((*p)[2].x - (*p)[3].x) /
+			((*p)[2].y - (*p)[3].y) !=
+			((*p)[0].x - (*p)[1].x) /
+			((*p)[0].y - (*p)[1].y))
+			return true;
+	}
+	else if ((*p)[2].y - (*p)[3].y !=
+		(*p)[0].y - (*p)[1].y)
+		return true;
+	return false;
+}
+
+bool ContourTrapezoid::LoadC(COLORREF *cl, std::istream &st) {
+	int r, g, b;
+	st >> r >> g >> b;
+	if (r < 0 || r > 255 ||
+		g < 0 || g > 255 ||
+		b < 0 || b > 255)
+		return true;
+	*cl = RGB(r, g, b);
+	return false;
 }

@@ -11,6 +11,7 @@
 #define EXC_WR_FAIL 5
 #define EXC_NOT_IN_DC 6
 #define EXC_CANT_CONTAIN 7
+#define EXC_P_TR_VL_WRONG 8
 
 #include <fstream>
 #include <iostream>
@@ -19,6 +20,7 @@
 #include <Windows.h>
 #include <windowsx.h>
 #include <cstdlib>
+#include <cstdarg>
 
 struct list {
 	int i;

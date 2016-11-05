@@ -15,16 +15,22 @@ template <class T> Container <T> ::~Container() {
 
 template <class T> void Container <T> ::Save(std::ofstream &st) const {
 	data *temp = first;
-	temp = first;
-	while (temp != nullptr) {
-		(temp->obj)->Getter(st);
-		temp = temp->next;
+	try {
+		while (temp != nullptr) {
+			(temp->obj)->Getter(st);
+			temp = temp->next;
+		}
+	}
+	catch (int e) {
+		throw;
 	}
 	delete temp;
 }
 
 template <> void Container <Drawable> ::Save(std::ofstream &st) const {
 	data *temp = first;
+	if (st.rdstate() & std::ios::failbit)
+		throw EXC_WR_FAIL;
 	st << count << '\n';
 	while (temp != nullptr) {
 		st << temp->signature;
@@ -32,32 +38,46 @@ template <> void Container <Drawable> ::Save(std::ofstream &st) const {
 	}
 	st << '\n';
 	temp = first;
-	while (temp != nullptr) {
-		switch (temp->signature) {
-		case 'b':
-			(dynamic_cast<Background *> (temp->obj))->Getter(st);
-			break;
-		case 'c':
-			(dynamic_cast<ContourTrapezoid *> (temp->obj))->Getter(st);
-			break;
-		case 'f':
-			(dynamic_cast<FilledTrapezoid *> (temp->obj))->Getter(st);
-			break;
-		case 'p':
-			(dynamic_cast<PartialTrapezoid *> (temp->obj))->Getter(st);
-			break;
-		default:
-			break;
+	try {
+		while (temp != nullptr) {
+			switch (temp->signature) {
+			case 'b':
+				(dynamic_cast<Background *> (temp->obj))->Getter(st);
+				break;
+			case 'c':
+				(dynamic_cast<ContourTrapezoid *> (temp->obj))->Getter(st);
+				break;
+			case 'f':
+				(dynamic_cast<FilledTrapezoid *> (temp->obj))->Getter(st);
+				break;
+			case 'p':
+				(dynamic_cast<PartialTrapezoid *> (temp->obj))->Getter(st);
+				break;
+			default:
+				break;
+			}
+			temp = temp->next;
 		}
-		temp = temp->next;
+	}
+	catch (int e) {
+		throw;
 	}
 	delete temp;
 }
 
 template <class T> void Container <T> ::Load(std::ifstream &st, HDC hdc, HWND hwnd) {
-	T *obj = new T(hdc, hwnd);
-	obj->Setter(st);
-	this->Push(obj);
+	size_t i;
+	st >> i;
+	try {
+		while (i > count) {
+			T *obj = new T(hdc, hwnd);
+			obj->Setter(st);
+			this->Push(obj);
+		}
+	}
+	catch (int e) {
+		throw;
+	}
 }
 
 template <> void Container <Drawable> ::Load(std::ifstream &st, HDC hdc, HWND hwnd) {
@@ -67,35 +87,40 @@ template <> void Container <Drawable> ::Load(std::ifstream &st, HDC hdc, HWND hw
 	char *type = new char[i + 1];
 	st.readsome(type, i);
 	st.get();
-	while (i > count) {
-		switch (type[count]) {
-		case 'b': {
-			Background *obj = new Background(hdc, hwnd);
-			obj->Setter(st);
-			this->Push(obj);
-			break;
+	try{
+		while (i > count) {
+			switch (type[count]) {
+			case 'b': {
+				Background *obj = new Background(hdc, hwnd);
+				obj->Setter(st);
+				this->Push(obj);
+				break;
+			}
+			case 'c': {
+				ContourTrapezoid *obj = new ContourTrapezoid(hdc, hwnd);
+				obj->Setter(st);
+				this->Push(obj);
+				break;
+			}
+			case 'f': {
+				FilledTrapezoid *obj = new FilledTrapezoid(hdc, hwnd);
+				obj->Setter(st);
+				this->Push(obj);
+				break;
+			}
+			case 'p': {
+				PartialTrapezoid *obj = new PartialTrapezoid(hdc, hwnd);
+				obj->Setter(st);
+				this->Push(obj);
+				break;
+			}
+			default:
+				break;
+			}
 		}
-		case 'c': {
-			ContourTrapezoid *obj = new ContourTrapezoid(hdc, hwnd);
-			obj->Setter(st);
-			this->Push(obj);
-			break;
-		}
-		case 'f': {
-			FilledTrapezoid *obj = new FilledTrapezoid(hdc, hwnd);
-			obj->Setter(st);
-			this->Push(obj);
-			break;
-		}
-		case 'p': {
-			PartialTrapezoid *obj = new PartialTrapezoid(hdc, hwnd);
-			obj->Setter(st);
-			this->Push(obj);
-			break;
-		}
-		default:
-			break;
-		}
+	}
+	catch (int e) {
+		throw;
 	}
 }
 
@@ -203,7 +228,7 @@ template <class T> list *Container <T> ::Search(COLORREF c) {
 	return retval;
 }
 
-template <class T> T& Container <T> ::GetElement(size_t i) const {
+template <class T> T& Container<T> ::operator [](size_t i) const {
 	size_t iter = 0;
 	if (i >= count)
 		throw EXC_CANT_CONTAIN;
@@ -228,7 +253,7 @@ template <class T> void Container <T> ::Draw(size_t i) const {
 	}
 }
 
-template <class T> int Container<T> ::Size() {
+template <class T> size_t Container<T> ::Size() const {
 	return count;
 }
 

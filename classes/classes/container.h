@@ -18,15 +18,15 @@ protected:
 	data *last = nullptr;
 public:
 	Container();
+	T& operator [](size_t i) const;
 	void Save(std::ofstream &st) const;
 	void Load(std::ifstream &st, HDC hdc, HWND hwnd);
 	void FrontPush(T *obj);
 	void Push(T *obj);
-	int Size();
+	size_t Size() const;
 	list *Search(POINT p);
 	list *Search(COLORREF c);
 	T& Pop();
-	T& GetElement(size_t i) const;
 	T* PopRem();
 	void Show(bool direction) const;
 	void Draw(size_t i) const;

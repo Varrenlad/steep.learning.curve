@@ -13,10 +13,14 @@ public:
 	char GetType() const;
 	~ContourTrapezoid();
 protected:
-	void IsCorrect(POINT *points) const;
+	static void SaveC(COLORREF &cl, std::ostream &st);
+	void SaveP(std::ostream &st, POINT *p) const;
+	bool LoadP(std::istream &st, POINT **p) const;
+	static bool LoadC(COLORREF *cl, std::istream &st);
 	void BorderCheck();
-	int pen_type;
+	unsigned short int pen_type;
+	unsigned short int pen_width;
 	COLORREF pen;
-	static float Signum(POINT p1, POINT p2, POINT p3);
+	static double Signum(POINT p1, POINT p2, POINT p3);
 };
 #endif

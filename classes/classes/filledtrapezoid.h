@@ -10,12 +10,10 @@ public:
 	void Setter(std::istream &st);
 	void Getter(std::ostream &st);
 	bool HasColour(COLORREF c);
-	const COLORREF GetPenColour() const;
-	const COLORREF GetBrushColour() const;
 	char GetType() const;
 protected:
 	HBRUSH *CreateBrush(COLORREF color, int type);
-	int brush_type = 0;
+	unsigned short int brush_type;
 	COLORREF brush;
 };
 #endif

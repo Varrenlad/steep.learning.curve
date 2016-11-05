@@ -2,8 +2,8 @@
 //#include "commonfunc.h"
 
 PartialTrapezoid::PartialTrapezoid(HDC &hdc, HWND &hwnd) : FilledTrapezoid(hdc, hwnd) {
-	//bgBrush = RGB(0, 0, 0);
-	//hbgBrush = CreateSolidBrush(bgBrush);
+	in_points = new POINT[4];
+	hbgBrush = 0;
 }
 
 PartialTrapezoid::~PartialTrapezoid() {
@@ -17,6 +17,8 @@ void PartialTrapezoid::Draw() {
 		if (e == EXC_OOB)
 			throw;
 	}
+	if (hbgBrush == 0)
+		hbgBrush = CreateSolidBrush(GetPixel(hdc, 0, 0));
 	SelectPen(hdc, basePen);
 	SelectBrush(hdc, baseBrush);
 	Polygon(hdc, points, 4);
@@ -25,79 +27,28 @@ void PartialTrapezoid::Draw() {
 }
 
 void PartialTrapezoid::Setter(std::istream &st) {
-	int i, r, g, b;
 	st >> pen_type >> pen_width >> brush_type;
-	st >> r >> g >> b;
-	if (r < 0 || r > 255 ||
-		g < 0 || g > 255 ||
-		b < 0 || b > 255)
-		throw EXC_F_TR_VL_WRONG;
-	pen = RGB(r, g, b);
-	st >> r >> g >> b;
-	if (r < 0 || r > 255 ||
-		g < 0 || g > 255 ||
-		b < 0 || b > 255)
-		throw EXC_F_TR_VL_WRONG;
-	brush = RGB(r, g, b);
-	st >> r >> g >> b;
-	if (r < 0 || r > 255 ||
-		g < 0 || g > 255 ||
-		b < 0 || b > 255)
-		throw EXC_F_TR_VL_WRONG;
-	bgBrush = RGB(r, g, b);
-	hbgBrush = CreateSolidBrush(bgBrush);
-	for (i = 0; i < count_of_p; ++i) {
-		st >> points[i].x >> points[i].y;
-	}
-	for (i = 0; i < count_of_p; ++i) {
-		st >> in_points[i].x >> in_points[i].y;
-	}
-	try {
-		this->IsCorrect(points);
-		this->IsCorrect(in_points);
-	}
-	catch (int e) {
-		throw;
-	}
+	if ((this->LoadC(&pen, st)) ||
+		(this->LoadC(&brush, st)) ||
+		(this->LoadP(st, &points)) ||
+		(this->LoadP(st, &in_points)))
+		throw EXC_P_TR_VL_WRONG;
 	basePen = CreatePen(pen_type, pen_width, pen);
 	baseBrush = *CreateBrush(brush, brush_type);
 }
 
 void PartialTrapezoid::Getter(std::ostream &st) {
-	int i;
-	try {
-		st << (int)GetRValue(bgBrush) << ' ' << (int)GetGValue(bgBrush) << ' '
-			<< (int)GetBValue(bgBrush) << '\n';
-		st << pen_type << ' ' << pen_width << ' ' << brush_type << '\n';
-		st << (int)GetRValue(pen) << ' ' << (int)GetGValue(pen) << ' '
-			<< (int)GetBValue(pen) << '\n';
-		st << (int)GetRValue(brush) << ' ' << (int)GetGValue(brush) << ' '
-			<< (int)GetBValue(brush) << '\n';
-		st << (int)GetRValue(bgBrush) << ' ' << (int)GetGValue(bgBrush) << ' '
-			<< (int)GetBValue(bgBrush) << '\n';
-		for (i = 0; i < count_of_p; ++i) {
-			st << points[i].x << ' ' << points[i].y << '\n';
-		}
-		for (i = 0; i < count_of_p; ++i) {
-			st << in_points[i].x << ' ' << in_points[i].y << '\n';
-		}
-		st << '\n';
-	}
-	catch (int e) {
-		throw;
-	}
+	if (st.rdstate() & std::ios::failbit)
+		throw EXC_WR_FAIL;
+	st << pen_type << ' ' << pen_width << ' ' << brush_type << '\n';
+	this->SaveC(pen, st);
+	this->SaveC(brush, st);
+	this->SaveP(st, points);
+	this->SaveP(st, in_points);
 }
 
 bool PartialTrapezoid::HasColour(COLORREF c) {
 	return (c == pen || c == brush);
-}
-
-const COLORREF PartialTrapezoid::GetPenColour() const {
-	return pen;
-}
-
-const COLORREF PartialTrapezoid::GetBrushColour() const {
-	return brush;
 }
 
 bool PartialTrapezoid::PointInside(POINT p) {
