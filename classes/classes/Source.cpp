@@ -46,13 +46,14 @@ int main() {
 		getchar();
 		exit(-1);
 	}
-#endif
-#ifndef LEGACY_LOAD
-	objects.Load(ifstr, hdc, hwnd);
-#else
 	for (i = 0; i < objects.Size(); ++i) {
+#endif
 		try {
+#ifndef LEGACY_LOAD
+			objects.Load(ifstr, hdc, hwnd);
+#else
 			objects[i].Setter(ifstr);
+#endif
 		}
 		catch (int e) {
 			switch (e) {
@@ -75,6 +76,7 @@ int main() {
 			getchar();
 			exit(-1);
 		}
+#ifdef LEGACY_LOAD
 	}
 #endif
 	ifstr.sync();
