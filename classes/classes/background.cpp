@@ -63,3 +63,7 @@ const COLORREF Background::GetColour() const {
 char Background::GetType() const {
 	return 'b';
 }
+
+void Background::Move(int x, int y) {
+	throw EXC_BG_VL_WRONG;
+}

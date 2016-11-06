@@ -8,7 +8,7 @@ public:
 	virtual char GetType() const = 0;
 	virtual void Draw() = 0;
 	virtual void Setter(std::istream &st) = 0;
-	void Move(int x, int y);
+	virtual void Move(int x, int y) = 0;
 	virtual void Getter(std::ostream &st) = 0;
 	virtual bool PointInside(POINT p) = 0;
 	virtual bool HasColour(COLORREF c) = 0;

@@ -10,26 +10,30 @@ PartialTrapezoid::~PartialTrapezoid() {
 }
 
 void PartialTrapezoid::Draw() {
+	size_t i;
 	try {
 		BorderCheck();
 	}
 	catch (int e) {
-		if (e == EXC_OOB)
-			throw;
+		throw;
 	}
 	if (hbgBrush == 0)
 		hbgBrush = CreateSolidBrush(GetPixel(hdc, 0, 0));
 	SelectPen(hdc, basePen);
 	SelectBrush(hdc, baseBrush);
 	Polygon(hdc, points, 4);
+	for (i = 0; i < count_of_p; i++) {
+		if (!(this->PointInside(in_points[i])))
+			throw EXC_P_TR_VL_WRONG;
+	}
 	SelectPen(hdc, hbgBrush);
 	Polygon(hdc, in_points, 4);
 }
 
 void PartialTrapezoid::Setter(std::istream &st) {
 	st >> pen_type >> pen_width >> brush_type;
-	if ((this->LoadC(&pen, st)) ||
-		(this->LoadC(&brush, st)) ||
+	if ((this->LoadC(&pen, st))    ||
+		(this->LoadC(&brush, st))  ||
 		(this->LoadP(st, &points)) ||
 		(this->LoadP(st, &in_points)))
 		throw EXC_P_TR_VL_WRONG;
@@ -51,7 +55,7 @@ bool PartialTrapezoid::HasColour(COLORREF c) {
 	return (c == pen || c == brush);
 }
 
-bool PartialTrapezoid::PointInside(POINT p) {
+bool PartialTrapezoid::PointInsideF(POINT p) {
 	bool b1, b2, b3, res;
 	b1 = Signum(p, in_points[0], in_points[1]) < 0.0f;
 	b2 = Signum(p, in_points[1], in_points[3]) < 0.0f;
@@ -74,4 +78,16 @@ bool PartialTrapezoid::PointInside(POINT p) {
 
 char PartialTrapezoid::GetType() const {
 	return 'p';
+}
+
+void PartialTrapezoid::Move(int x, int y) {
+	size_t i;
+	for (i = 0; i < count_of_p; ++i) {
+		points[i].x += x;
+		points[i].y += y;
+	}
+	for (i = 0; i < count_of_p; ++i) {
+		in_points[i].x += x;
+		in_points[i].y += y;
+	}
 }

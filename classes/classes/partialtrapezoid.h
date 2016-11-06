@@ -11,8 +11,9 @@ public:
 	void Setter(std::istream &st);
 	void Getter(std::ostream &st);
 	bool HasColour(COLORREF c);
-	bool PointInside(POINT p);
+	bool PointInsideF(POINT p);
 	char GetType() const;
+	void Move(int x, int y);
 private:
 	unsigned short int in_pen_type = 0;
 	unsigned short int in_brush_type = 0;

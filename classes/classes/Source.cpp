@@ -1,8 +1,7 @@
 #include "container.h"
 #define INPUT_FILE "input.txt"
 
-//void save_data(Drawable *obj, std::ofstream &ofstr);
-void draw(Container<Drawable> objects, HDC hdc);
+void draw(Container<Drawable> &objects, HDC hdc);
 
 int main() {
 	char filename[FILENAME_MAX];
@@ -12,7 +11,6 @@ int main() {
 	HWND hwnd = GetConsoleWindow();
 	HDC hdc = GetDC(hwnd);
 	unsigned int i, type;
-	Background *bg = new Background(hdc, hwnd);
 	while (true) {
 		std::cin >> filename;
 		ifstr.open(filename, std::ifstream::in);
@@ -22,6 +20,9 @@ int main() {
 		}
 		else break;
 	}
+	getchar();
+#ifdef LEGACY_LOAD
+	Background *bg = new Background(hdc, hwnd);
 	ifstr >> type;
 	objects.Push(bg);
 	switch (type) {
@@ -45,23 +46,37 @@ int main() {
 		getchar();
 		exit(-1);
 	}
+#endif
+#ifndef LEGACY_LOAD
+	objects.Load(ifstr, hdc, hwnd);
+#else
 	for (i = 0; i < objects.Size(); ++i) {
 		try {
 			objects[i].Setter(ifstr);
 		}
 		catch (int e) {
-			if (e == EXC_BG_VL_WRONG)
+			switch (e) {
+			case EXC_BG_VL_WRONG:
 				TextOutA(hdc, 0, 0, "Wrong background colour data", 29);
-			if (e == EXC_C_TR_VL_WRONG)
+				break;
+			case EXC_C_TR_VL_WRONG:
 				TextOutA(hdc, 0, 0, "Wrong contour trapezoid data", 29);
-			if (e == EXC_F_TR_VL_WRONG)
+				break;
+			case EXC_F_TR_VL_WRONG:
 				TextOutA(hdc, 0, 0, "Wrong filled trapezoid data", 28);
-			if (e == EXC_P_TR_VL_WRONG)
+				break;
+			case EXC_P_TR_VL_WRONG:
 				TextOutA(hdc, 0, 0, "Wrong partial trapezoid data", 29);
+				break;
+			default:
+				TextOutA(hdc, 0, 0, "Unknown error while loading", 28);
+				break;
+			}
 			getchar();
 			exit(-1);
 		}
 	}
+#endif
 	ifstr.sync();
 	ifstr.close();
 	draw(objects, hdc);
@@ -69,19 +84,6 @@ int main() {
 	TextOutA(hdc, 0, 0, "Do you want to save current data? Y/n\n", 39);
 	i = getchar();
 	if (i != 'n' || i != 'N') {
-		ofstr << type << '\n';
-		//for (i = 0; i < objects.Size(); ++i) {
-			try {
-				objects.Save(ofstr);
-				//save_data(objects[i], ofstr);
-			}
-			catch (int e) {
-				if (e == EXC_WR_FAIL)
-					TextOutA(hdc, 0, 0, "Unable to write data to file", 29);
-				else
-					TextOutA(hdc, 0, 0, "Unknown error while saving data", 32);
-			//}
-		}
 		try {
 			objects.Save(ofstr);
 		}
@@ -96,7 +98,7 @@ int main() {
 	return 0;
 }
 
-void draw(Container<Drawable> objects, HDC hdc) {
+void draw(Container<Drawable> &objects, HDC hdc) {
 	unsigned int c, i;
 	do {
 		for (i = 0; i < objects.Size(); ++i) {

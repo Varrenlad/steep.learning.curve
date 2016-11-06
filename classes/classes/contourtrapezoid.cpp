@@ -65,7 +65,7 @@ bool ContourTrapezoid::PointInside(POINT p) {
 	b1 = Signum(p, points[1], points[2]) < 0.0f;
 	b2 = Signum(p, points[2], points[3]) < 0.0f;
 	b3 = Signum(p, points[3], points[1]) < 0.0f;
-	return res && ((b1 == b2) && (b2 == b3));
+	return res || ((b1 == b2) && (b2 == b3));
 }
 
 double ContourTrapezoid::Signum(POINT p1, POINT p2, POINT p3) {
@@ -124,4 +124,12 @@ bool ContourTrapezoid::LoadC(COLORREF *cl, std::istream &st) {
 		return true;
 	*cl = RGB(r, g, b);
 	return false;
+}
+
+void ContourTrapezoid::Move(int x, int y) {
+	size_t i;
+	for (i = 0; i < count_of_p; ++i) {
+		points[i].x += x;
+		points[i].y += y;
+	}
 }

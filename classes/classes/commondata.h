@@ -13,6 +13,8 @@
 #define EXC_CANT_CONTAIN 7
 #define EXC_P_TR_VL_WRONG 8
 
+//#define LEGACY_LOAD
+
 #include <fstream>
 #include <iostream>
 #include <conio.h>

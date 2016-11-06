@@ -9,14 +9,6 @@ Drawable::Drawable(int input, HDC hdc_i) {
 	baseBrush = CreateSolidBrush(RGB(0, 0, 0));
 }
 
-void Drawable::Move(int x, int y) {
-	size_t i;
-	for (i = 0; i < count_of_p; ++i) {
-		points[i].x += x;
-		points[i].y += y;
-	}
-}
-
 Drawable::~Drawable() {
 	delete[] points;
 	DeletePen(basePen);

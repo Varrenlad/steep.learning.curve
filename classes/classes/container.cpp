@@ -29,17 +29,20 @@ template <class T> void Container <T> ::Save(std::ofstream &st) const {
 
 template <> void Container <Drawable> ::Save(std::ofstream &st) const {
 	data *temp = first;
+	size_t i = count;
 	if (st.rdstate() & std::ios::failbit)
 		throw EXC_WR_FAIL;
 	st << count << '\n';
-	while (temp != nullptr) {
+	while (i) {
 		st << temp->signature;
 		temp = temp->next;
+		--i;
 	}
 	st << '\n';
 	temp = first;
+	i = count;
 	try {
-		while (temp != nullptr) {
+		while (i) {
 			switch (temp->signature) {
 			case 'b':
 				(dynamic_cast<Background *> (temp->obj))->Getter(st);
@@ -57,6 +60,7 @@ template <> void Container <Drawable> ::Save(std::ofstream &st) const {
 				break;
 			}
 			temp = temp->next;
+			--i;
 		}
 	}
 	catch (int e) {
@@ -242,15 +246,14 @@ template <class T> T& Container<T> ::operator [](size_t i) const {
 
 template <class T> void Container <T> ::Draw(size_t i) const {
 	data *temp;
-	if (i > count)
+	if (i >= count)
 		return;
 	temp = first;
-	while (temp != nullptr) {
-		--i;
-		if (!i)
-			temp->obj->Draw();
+	while (i) {
 		temp = temp->next;
+		--i;
 	}
+	temp->obj->Draw();
 }
 
 template <class T> size_t Container<T> ::Size() const {

@@ -11,6 +11,7 @@ public:
 	bool PointInside(POINT p);
 	bool HasColour(COLORREF c);
 	char GetType() const;
+	void Move(int x, int y);
 	~ContourTrapezoid();
 protected:
 	static void SaveC(COLORREF &cl, std::ostream &st);

@@ -10,6 +10,7 @@ public:
 	void Getter(std::ostream &st);
 	bool PointInside(POINT p);
 	bool HasColour(COLORREF c);
+	void Move(int x, int y);
 	const COLORREF GetColour() const;
 	char GetType() const;
 	~Background();
