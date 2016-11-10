@@ -125,6 +125,7 @@
     </ClCompile>
     <ClCompile Include="contourtrapezoid.cpp" />
     <ClCompile Include="drawable.cpp" />
+    <ClCompile Include="filled.cpp" />
     <ClCompile Include="filledtrapezoid.cpp" />
     <ClCompile Include="partialtrapezoid.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -135,6 +136,7 @@
     <ClInclude Include="container.h" />
     <ClInclude Include="contourtrapezoid.h" />
     <ClInclude Include="drawable.h" />
+    <ClInclude Include="filled.h" />
     <ClInclude Include="filledtrapezoid.h" />
     <ClInclude Include="partialtrapezoid.h" />
   </ItemGroup>

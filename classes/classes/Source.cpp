@@ -1,6 +1,8 @@
 #include "container.h"
 #define INPUT_FILE "input.txt"
 
+#ifndef CONT_W
+
 void draw(Container<Drawable> &objects, HDC hdc);
 
 int main() {
@@ -141,7 +143,9 @@ void draw(Container<Drawable> &objects, HDC hdc) {
 	} while (c != 27);
 }
 
-/*int main() {
+#else
+
+int main() {
 	int pos = 0;
 	HWND hwnd = GetConsoleWindow();
 	HDC hdc = GetDC(hwnd);
@@ -280,9 +284,10 @@ void draw(Container<Drawable> &objects, HDC hdc) {
 			list *t, *l = ctr.Search(RGB(r, g, b));
 			t = l;
 			while (t != nullptr) {
-				std::cout << t->i;
+				std::cout << t->i << ' ';
 				t = t->next;
 			}
+			std::cout << std::endl;
 			t = l;
 			while (t != nullptr) {
 				l = t->next;
@@ -299,9 +304,10 @@ void draw(Container<Drawable> &objects, HDC hdc) {
 			list *t, *l = ctr.Search(p);
 			t = l;
 			while (t != nullptr) {
-				std::cout << t->i;
+				std::cout << t->i << ' ';
 				t = t->next;
 			}
+			std::cout << std::endl;
 			t = l;
 			while (t != nullptr) {
 				l = t->next;
@@ -336,8 +342,9 @@ void draw(Container<Drawable> &objects, HDC hdc) {
 			std::cout << "Enter numeral to draw\n";
 			std::cin >> pos;
 			system("cls");
-			//RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
-		//	UpdateWindow(hwnd);
+			RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
+			UpdateWindow(hwnd);
+			Sleep(100);
 			ctr.Draw(pos);
 			std::cin.get();
 			std::cin.get();
@@ -348,4 +355,6 @@ void draw(Container<Drawable> &objects, HDC hdc) {
 		}
 	}
 	return 0;
-}*/
+}
+
+#endif

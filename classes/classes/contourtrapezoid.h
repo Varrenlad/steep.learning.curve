@@ -19,9 +19,6 @@ protected:
 	bool LoadP(std::istream &st, POINT **p) const;
 	static bool LoadC(COLORREF *cl, std::istream &st);
 	void BorderCheck();
-	unsigned short int pen_type;
-	unsigned short int pen_width;
-	COLORREF pen;
 	static double Signum(POINT p1, POINT p2, POINT p3);
 };
 #endif

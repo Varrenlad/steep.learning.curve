@@ -1,8 +1,9 @@
 #ifndef BG
 #define BG
 #include "drawable.h"
+#include "filled.h"
 
-class Background : public Drawable {
+class Background : public Drawable, public Filled {
 public:
 	Background(HDC &hdc, HWND hwnd);
 	void Draw();
@@ -17,6 +18,5 @@ public:
 private:
 	void Update(HWND hwnd);
 	RECT rt;
-	COLORREF bgc;
 };
 #endif

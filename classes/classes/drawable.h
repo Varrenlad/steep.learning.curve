@@ -19,7 +19,9 @@ protected:
 	HDC hdc;
 	size_t count_of_p;
 	HPEN basePen;
-	HBRUSH baseBrush;
+	COLORREF pen;
+	unsigned short int pen_type;
+	unsigned short int pen_width;
 	HWND hwnd_i;
 };
 #endif

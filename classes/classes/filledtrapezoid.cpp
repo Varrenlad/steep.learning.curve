@@ -50,12 +50,3 @@ bool FilledTrapezoid::HasColour(COLORREF c) {
 char FilledTrapezoid::GetType() const {
 	return 'f';
 }
-
-HBRUSH* FilledTrapezoid::CreateBrush(COLORREF color, int type) {
-	HBRUSH *retval = new HBRUSH;
-	if (!type)
-		*retval = CreateSolidBrush(color);
-	else
-		*retval = CreateHatchBrush(type, color);
-	return retval;
-}

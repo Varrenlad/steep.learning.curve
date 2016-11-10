@@ -1,8 +1,9 @@
 #ifndef FTRAP
 #define FTRAP
 #include "contourtrapezoid.h"
+#include "filled.h"
 
-class FilledTrapezoid : public ContourTrapezoid {
+class FilledTrapezoid : public ContourTrapezoid, public Filled {
 public:
 	FilledTrapezoid(HDC &hdc, HWND hwnd);
 	~FilledTrapezoid();
@@ -11,9 +12,5 @@ public:
 	void Getter(std::ostream &st);
 	bool HasColour(COLORREF c);
 	char GetType() const;
-protected:
-	HBRUSH *CreateBrush(COLORREF color, int type);
-	unsigned short int brush_type;
-	COLORREF brush;
 };
 #endif

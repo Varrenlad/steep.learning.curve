@@ -2,7 +2,8 @@
 
 Background::Background(HDC &hdc, HWND hwnd) : Drawable(2, hdc)
 {
-	bgc = 0;
+	brush = RGB(0,0,0);
+	baseBrush = CreateSolidBrush(brush);
 	hwnd_i = hwnd;
 };
 
@@ -12,8 +13,8 @@ Background::~Background() {
 
 void Background::Draw() {
 	Update(hwnd_i);
-	Drawable::baseBrush = CreateSolidBrush(bgc);
-	SelectBrush(hdc, Drawable::baseBrush);
+	baseBrush = CreateSolidBrush(brush);
+	SelectBrush(hdc, baseBrush);
 	Rectangle(hdc, points[0].x, points[0].y, points[1].x, points[1].y);
 	DeleteBrush(baseBrush);
 }
@@ -25,14 +26,14 @@ void Background::Setter(std::istream &st) {
 		g < 0 || g > 255 ||
 		b < 0 || b > 255)
 		throw EXC_BG_VL_WRONG;
-	else bgc = RGB(r, g, b);
+	else brush = RGB(r, g, b);
 	st.get();
 }
 
 void Background::Getter(std::ostream &st) {
 	try {
-		st << (int)GetRValue(bgc) << ' ' << (int)GetGValue(bgc)
-			<< ' ' << (int)GetBValue(bgc) << '\n';
+		st << (int)GetRValue(brush) << ' ' << (int)GetGValue(brush)
+			<< ' ' << (int)GetBValue(brush) << '\n';
 	}
 	catch (int) {
 		throw EXC_WR_FAIL;
@@ -53,11 +54,11 @@ bool Background::PointInside(POINT p) {
 }
 
 bool Background::HasColour(COLORREF c) {
-	return (bgc == c);
+	return (brush == c);
 }
 
 const COLORREF Background::GetColour() const {
-	return bgc;
+	return brush;
 }
 
 char Background::GetType() const {
