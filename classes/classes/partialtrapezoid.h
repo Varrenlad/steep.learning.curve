@@ -15,9 +15,6 @@ public:
 	char GetType() const;
 	void Move(int x, int y);
 private:
-	unsigned short int in_pen_type = 0;
-	unsigned short int in_brush_type = 0;
-	POINT *in_points;
-	HBRUSH hbgBrush;
+	FilledTrapezoid *inner;
 };
 #endif

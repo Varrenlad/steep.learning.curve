@@ -3,7 +3,8 @@
 
 FilledTrapezoid::FilledTrapezoid(HDC &hdc, HWND hwnd) : ContourTrapezoid(hdc, hwnd) {
 	brush_type = 0;
-	brush = RGB(255, 255, 255);
+	brush = RGB(0, 0, 0);
+	baseBrush = CreateSolidBrush(brush);
 };
 
 FilledTrapezoid::~FilledTrapezoid() {
@@ -49,4 +50,14 @@ bool FilledTrapezoid::HasColour(COLORREF c) {
 
 char FilledTrapezoid::GetType() const {
 	return 'f';
+}
+
+void FilledTrapezoid::UpdateColour(COLORREF newc) {
+	brush = newc;
+	DeleteBrush(baseBrush);
+	baseBrush = CreateSolidBrush(newc);
+}
+
+POINT& FilledTrapezoid::GetPoint(size_t i) {
+	return points[i];
 }

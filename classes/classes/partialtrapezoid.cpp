@@ -2,11 +2,11 @@
 //#include "commonfunc.h"
 
 PartialTrapezoid::PartialTrapezoid(HDC &hdc, HWND &hwnd) : FilledTrapezoid(hdc, hwnd) {
-	in_points = new POINT[4];
-	hbgBrush = 0;
+	inner = new FilledTrapezoid(hdc, hwnd);
 }
 
 PartialTrapezoid::~PartialTrapezoid() {
+	delete inner;
 }
 
 void PartialTrapezoid::Draw() {
@@ -17,17 +17,15 @@ void PartialTrapezoid::Draw() {
 	catch (int e) {
 		throw;
 	}
-	if (hbgBrush == 0)
-		hbgBrush = CreateSolidBrush(GetPixel(hdc, 0, 0));
+	inner->UpdateColour(GetPixel(hdc, 0, 0));
 	SelectPen(hdc, basePen);
 	SelectBrush(hdc, baseBrush);
 	Polygon(hdc, points, 4);
 	for (i = 0; i < count_of_p; i++) {
-		if (!(this->PointInside(in_points[i])))
+		if (!(this->PointInside(inner->GetPoint(i))))
 			throw EXC_P_TR_VL_WRONG;
 	}
-	SelectPen(hdc, hbgBrush);
-	Polygon(hdc, in_points, 4);
+	inner->Draw();
 }
 
 void PartialTrapezoid::Setter(std::istream &st) {
@@ -35,7 +33,7 @@ void PartialTrapezoid::Setter(std::istream &st) {
 	if ((this->LoadC(&pen, st))    ||
 		(this->LoadC(&brush, st))  ||
 		(this->LoadP(st, &points)) ||
-		(this->LoadP(st, &in_points)))
+		(inner->LoadP(st, &(inner->points))))
 		throw EXC_P_TR_VL_WRONG;
 	basePen = CreatePen(pen_type, pen_width, pen);
 	baseBrush = *CreateBrush(brush, brush_type);
@@ -48,7 +46,7 @@ void PartialTrapezoid::Getter(std::ostream &st) {
 	this->SaveC(pen, st);
 	this->SaveC(brush, st);
 	this->SaveP(st, points);
-	this->SaveP(st, in_points);
+	inner->SaveP(st, inner->points);
 }
 
 bool PartialTrapezoid::HasColour(COLORREF c) {
@@ -57,14 +55,7 @@ bool PartialTrapezoid::HasColour(COLORREF c) {
 
 bool PartialTrapezoid::PointInsideF(POINT p) {
 	bool b1, b2, b3, res;
-	b1 = Signum(p, in_points[0], in_points[1]) < 0.0f;
-	b2 = Signum(p, in_points[1], in_points[3]) < 0.0f;
-	b3 = Signum(p, in_points[3], in_points[0]) < 0.0f;
-	res = ((b1 == b2) && (b2 == b3));
-	b1 = Signum(p, in_points[1], in_points[2]) < 0.0f;
-	b2 = Signum(p, in_points[2], in_points[3]) < 0.0f;
-	b3 = Signum(p, in_points[3], in_points[1]) < 0.0f;
-	if (res && ((b1 == b2) && (b2 == b3)))  
+	if (inner->PointInside(p))
 		return false; //if point is inside empty area
 	b1 = Signum(p, points[0], points[1]) < 0.0f;
 	b2 = Signum(p, points[1], points[3]) < 0.0f;
@@ -86,8 +77,5 @@ void PartialTrapezoid::Move(int x, int y) {
 		points[i].x += x;
 		points[i].y += y;
 	}
-	for (i = 0; i < count_of_p; ++i) {
-		in_points[i].x += x;
-		in_points[i].y += y;
-	}
+	inner->Move(x, y);
 }
