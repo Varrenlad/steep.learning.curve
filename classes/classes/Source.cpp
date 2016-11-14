@@ -12,7 +12,7 @@ int main() {
 	Container<Drawable> objects;
 	HWND hwnd = GetConsoleWindow();
 	HDC hdc = GetDC(hwnd);
-	unsigned int i, type;
+	unsigned int i;
 	while (true) {
 		std::cin >> filename;
 		ifstr.open(filename, std::ifstream::in);
@@ -103,10 +103,17 @@ int main() {
 }
 
 void draw(Container<Drawable> &objects, HDC hdc) {
+	bool show_debugging_info = 0;
 	unsigned int c, i;
 	do {
+		if (show_debugging_info)
+			system("cls");
 		for (i = 0; i < objects.Size(); ++i) {
 			try {
+				if (show_debugging_info) {
+					system("cls");
+					objects[i].Getter(std::cout);
+				}
 				objects.Draw(i);
 			}
 			catch (int e) {
@@ -118,6 +125,8 @@ void draw(Container<Drawable> &objects, HDC hdc) {
 				}
 			}
 		c = _getch();
+		if (c == 'd')
+			show_debugging_info = !show_debugging_info;
 		if (c == 0 || c == 224) {
 			c = _getch();
 			for (i = 0; i < objects.Size(); ++i) {

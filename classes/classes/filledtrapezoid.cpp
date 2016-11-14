@@ -1,5 +1,4 @@
 #include "filledtrapezoid.h"
-//#include "commonfunc.h"
 
 FilledTrapezoid::FilledTrapezoid(HDC &hdc, HWND hwnd) : ContourTrapezoid(hdc, hwnd) {
 	brush_type = 0;
@@ -29,7 +28,7 @@ void FilledTrapezoid::Setter(std::istream &st) { ///Four points, no less
 	st >> pen_type >> pen_width >> brush_type;
 	if ((this->LoadC(&pen, st))   || 
 		(this->LoadC(&brush, st)) || 
-		(this->LoadP(st, &points)))
+		(this->LoadP(st)))
 		throw EXC_F_TR_VL_WRONG;
 	basePen = CreatePen(pen_type, pen_width, pen);
 	baseBrush = *CreateBrush(brush, brush_type);
@@ -41,7 +40,7 @@ void FilledTrapezoid::Getter(std::ostream &st) {
 	st << pen_type << ' ' << pen_width << ' ' << brush_type << '\n';
 	this->SaveC(pen, st);
 	this->SaveC(brush, st);
-	this->SaveP(st, points);
+	this->SaveP(st);
 }
 
 bool FilledTrapezoid::HasColour(COLORREF c) {

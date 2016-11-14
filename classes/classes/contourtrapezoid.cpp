@@ -29,7 +29,7 @@ void ContourTrapezoid::Setter(std::istream &st) { ///Four points, no less
 	st >> pen_type >> pen_width;
 	if (this->LoadC(&pen, st))
 		throw EXC_C_TR_VL_WRONG;
-	if (this->LoadP(st, &points))
+	if (this->LoadP(st))
 		throw EXC_C_TR_VL_WRONG;
 	basePen = CreatePen(pen_type, pen_width, pen);
 }
@@ -39,7 +39,7 @@ void ContourTrapezoid::Getter(std::ostream &st) {
 		throw EXC_WR_FAIL;
 	st << pen_type << ' ' << pen_width << '\n';
 	this->SaveC(pen, st);
-	this->SaveP(st, points);
+	this->SaveP(st);
 }
 
 void ContourTrapezoid::BorderCheck() {
@@ -83,31 +83,31 @@ void ContourTrapezoid::SaveC(COLORREF &cl, std::ostream &st) {
 	st.flush();
 }
 
-void ContourTrapezoid::SaveP(std::ostream &st, POINT *p) const {
+void ContourTrapezoid::SaveP(std::ostream &st) const {
 	size_t i;
 	for (i = 0; i < count_of_p; ++i) {
-		st << p[i].x << ' ' << p[i].y << '\n';
+		st << points[i].x << ' ' << points[i].y << '\n';
 	}
 	st.flush();
 }
 
-bool ContourTrapezoid::LoadP(std::istream &st, POINT **p) const {
+bool ContourTrapezoid::LoadP(std::istream &st) const {
 	size_t i;
 	for (i = 0; i < count_of_p; ++i) {
-		st >> (*p)[i].x >> (*p)[i].y;
+		st >> (points)[i].x >> (points)[i].y;
 	}
 	st.get();
 	//check data
-	if (((*p)[2].y - (*p)[3].y) &&
-		((*p)[0].y - (*p)[1].y)) {
-		if (((*p)[2].x - (*p)[3].x) /
-			((*p)[2].y - (*p)[3].y) !=
-			((*p)[0].x - (*p)[1].x) /
-			((*p)[0].y - (*p)[1].y))
+	if (((points)[2].y - (points)[3].y) &&
+		((points)[0].y - (points)[1].y)) {
+		if (((points)[2].x - (points)[3].x) /
+			((points)[2].y - (points)[3].y) !=
+			((points)[0].x - (points)[1].x) /
+			((points)[0].y - (points)[1].y))
 			return true;
 	}
-	else if ((*p)[2].y - (*p)[3].y !=
-		(*p)[0].y - (*p)[1].y)
+	else if ((points)[2].y - (points)[3].y !=
+		(points)[0].y - (points)[1].y)
 		return true;
 	return false;
 }

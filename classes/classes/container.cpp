@@ -1,6 +1,7 @@
 #include "container.h"
 
 template <class T> Container <T> ::Container() {
+	first = nullptr;
 	count = 0;
 }
 

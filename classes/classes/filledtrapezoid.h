@@ -4,7 +4,7 @@
 #include "filled.h"
 
 class FilledTrapezoid : public ContourTrapezoid, public Filled {
-	friend class PartialTrapezoid;
+	friend class FilledTrapezoid_Proxy;
 public:
 	FilledTrapezoid(HDC &hdc, HWND hwnd);
 	~FilledTrapezoid();

@@ -1,8 +1,8 @@
 #include "partialtrapezoid.h"
-//#include "commonfunc.h"
 
 PartialTrapezoid::PartialTrapezoid(HDC &hdc, HWND &hwnd) : FilledTrapezoid(hdc, hwnd) {
 	inner = new FilledTrapezoid(hdc, hwnd);
+	proxy = new FilledTrapezoid_Proxy(*inner);
 }
 
 PartialTrapezoid::~PartialTrapezoid() {
@@ -17,12 +17,13 @@ void PartialTrapezoid::Draw() {
 	catch (int e) {
 		throw;
 	}
-	inner->UpdateColour(GetPixel(hdc, 0, 0));
+	proxy->UpdateColour(GetPixel(hdc, (points[0].x + points[1].x) / 2,
+									  (points[0].y + points[3].y) / 2));
 	SelectPen(hdc, basePen);
 	SelectBrush(hdc, baseBrush);
 	Polygon(hdc, points, 4);
 	for (i = 0; i < count_of_p; i++) {
-		if (!(this->PointInside(inner->GetPoint(i))))
+		if (!(this->PointInside(proxy->GetPoint(i))))
 			throw EXC_P_TR_VL_WRONG;
 	}
 	inner->Draw();
@@ -32,8 +33,8 @@ void PartialTrapezoid::Setter(std::istream &st) {
 	st >> pen_type >> pen_width >> brush_type;
 	if ((this->LoadC(&pen, st))    ||
 		(this->LoadC(&brush, st))  ||
-		(this->LoadP(st, &points)) ||
-		(inner->LoadP(st, &(inner->points))))
+		(this->LoadP(st)) ||
+		(proxy->LoadP(st)))
 		throw EXC_P_TR_VL_WRONG;
 	basePen = CreatePen(pen_type, pen_width, pen);
 	baseBrush = *CreateBrush(brush, brush_type);
@@ -45,8 +46,8 @@ void PartialTrapezoid::Getter(std::ostream &st) {
 	st << pen_type << ' ' << pen_width << ' ' << brush_type << '\n';
 	this->SaveC(pen, st);
 	this->SaveC(brush, st);
-	this->SaveP(st, points);
-	inner->SaveP(st, inner->points);
+	this->SaveP(st);
+	proxy->SaveP(st);
 }
 
 bool PartialTrapezoid::HasColour(COLORREF c) {

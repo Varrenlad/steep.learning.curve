@@ -2,6 +2,7 @@
 #define PTRAP
 #include "background.h"
 #include "filledtrapezoid.h"
+#include "filledtrapezoid_proxified.h"
 
 class PartialTrapezoid : public FilledTrapezoid {
 public:
@@ -16,5 +17,6 @@ public:
 	void Move(int x, int y);
 private:
 	FilledTrapezoid *inner;
+	FilledTrapezoid_Proxy *proxy;
 };
 #endif

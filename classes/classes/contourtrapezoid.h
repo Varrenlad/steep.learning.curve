@@ -15,8 +15,8 @@ public:
 	~ContourTrapezoid();
 protected:
 	static void SaveC(COLORREF &cl, std::ostream &st);
-	void SaveP(std::ostream &st, POINT *p) const;
-	bool LoadP(std::istream &st, POINT **p) const;
+	void SaveP(std::ostream &st) const;
+	bool LoadP(std::istream &st) const;
 	static bool LoadC(COLORREF *cl, std::istream &st);
 	void BorderCheck();
 	static double Signum(POINT p1, POINT p2, POINT p3);
