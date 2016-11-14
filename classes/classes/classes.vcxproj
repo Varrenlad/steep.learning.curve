@@ -122,6 +122,7 @@
     <ClCompile Include="background.cpp" />
     <ClCompile Include="container.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="contourtrapezoid.cpp" />
     <ClCompile Include="drawable.cpp" />

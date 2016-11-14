@@ -1,10 +1,6 @@
 #include "contourtrapezoid.h"
 
 ContourTrapezoid::ContourTrapezoid(HDC &hdc, HWND hwnd) : Drawable(4, hdc) {
-	pen_type = 0;
-	pen_width = 5;
-	pen = RGB(0, 0, 0);
-	CreatePen(pen_type, pen_width, pen);
 	hwnd_i = hwnd;
 };
 
