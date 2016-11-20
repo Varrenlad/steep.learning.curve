@@ -99,6 +99,14 @@ int main() {
 		}
 	}
 	ofstr.close();
+	RECT rt;
+	GetClientRect(hwnd, &rt);
+	/*HDC hdcMeta = CreateEnhMetaFile(hdc, "name.emf", &rt, NULL);
+	for (i = 0; i < objects.Size(); ++i) {
+		objects[i].ModifyDC(hdcMeta);
+		objects.Draw(i);
+	}
+	DeleteEnhMetaFile(CloseEnhMetaFile(hdcMeta));*/
 	return 0;
 }
 

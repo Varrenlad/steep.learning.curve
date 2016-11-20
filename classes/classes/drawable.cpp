@@ -16,3 +16,7 @@ Drawable::~Drawable() {
 	DeletePen(basePen);
 	count_of_p = 0;
 }
+
+void Drawable::ModifyDC(HDC &new_dc) {
+	hdc = new_dc;
+}

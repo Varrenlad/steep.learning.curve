@@ -13,6 +13,7 @@ public:
 	virtual bool PointInside(POINT p) = 0;
 	virtual bool HasColour(COLORREF c) = 0;
 	Drawable(const Drawable& that) = delete;
+	void ModifyDC(HDC &new_dc);
 	virtual ~Drawable();
 protected:
 	POINT *points;
