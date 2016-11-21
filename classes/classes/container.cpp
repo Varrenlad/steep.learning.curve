@@ -169,15 +169,20 @@ template <class T> void Container <T> ::FrontPush(T *obj) {
 template <class T> T& Container <T> ::Pop() {
 	if (count)
 		return *(last->obj);
-	else throw EXC_NOT_IN_DC;
+	else throw EXC_CANT_CONTAIN;
+	return nullptr;
 }
 
 template <class T> T* Container <T> ::PopRem() {
-	T* retval = last->obj;
-	last = last->prev;
-	delete last->next;
-	last->next = nullptr;
-	return retval;
+	if (count) {
+		T* retval = last->obj;
+		last = last->prev;
+		delete last->next;
+		last->next = nullptr;
+		return retval;
+	}
+	else throw EXC_CANT_CONTAIN;
+	return nullptr;
 }
 
 template <class T> void Container <T> ::Show(bool direction) const {
@@ -235,8 +240,10 @@ template <class T> list *Container <T> ::Search(COLORREF c) {
 
 template <class T> T& Container<T> ::operator [](size_t i) const {
 	size_t iter = 0;
-	if (i >= count)
+	if (i >= count) {
 		throw EXC_CANT_CONTAIN;
+		return nullptr;
+	}
 	data *temp = first;
 	while (iter != i) {
 		temp = temp->next;
