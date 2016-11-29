@@ -13,7 +13,6 @@
 #define EXC_CANT_CONTAIN 7
 #define EXC_P_TR_VL_WRONG 8
 
-//#define LEGACY_LOAD
 //#define CONT_W
 
 #include <fstream>

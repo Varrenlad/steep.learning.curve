@@ -87,6 +87,7 @@ template <class T> void Container <T> ::Load(std::ifstream &st, HDC hdc, HWND hw
 
 template <> void Container <Drawable> ::Load(std::ifstream &st, HDC hdc, HWND hwnd) {
 	size_t i;
+	Drawable *obj;
 	st >> i;
 	st.get();
 	char *type = new char[i + 1];
@@ -94,33 +95,30 @@ template <> void Container <Drawable> ::Load(std::ifstream &st, HDC hdc, HWND hw
 	st.get();
 	try{
 		while (i > count) {
-			switch (type[count]) {
+			switch (type[count]) { //create object by type
 			case 'b': {
-				Background *obj = new Background(hdc, hwnd);
-				obj->Setter(st);
-				this->Push(obj);
+				obj = new Background(hdc, hwnd);
 				break;
 			}
 			case 'c': {
-				ContourTrapezoid *obj = new ContourTrapezoid(hdc, hwnd);
-				obj->Setter(st);
-				this->Push(obj);
+				obj = new ContourTrapezoid(hdc, hwnd);
 				break;
 			}
 			case 'f': {
-				FilledTrapezoid *obj = new FilledTrapezoid(hdc, hwnd);
-				obj->Setter(st);
-				this->Push(obj);
+				obj = new FilledTrapezoid(hdc, hwnd);
 				break;
 			}
 			case 'p': {
-				PartialTrapezoid *obj = new PartialTrapezoid(hdc, hwnd);
-				obj->Setter(st);
-				this->Push(obj);
+				obj = new PartialTrapezoid(hdc, hwnd);
 				break;
 			}
 			default:
+				obj = nullptr;
 				break;
+			}
+			if (obj) {
+				obj->Setter(st);
+				this->Push(obj);
 			}
 		}
 	}
@@ -170,7 +168,6 @@ template <class T> T& Container <T> ::Pop() {
 	if (count)
 		return *(last->obj);
 	else throw EXC_CANT_CONTAIN;
-	return nullptr;
 }
 
 template <class T> T* Container <T> ::PopRem() {
@@ -182,7 +179,6 @@ template <class T> T* Container <T> ::PopRem() {
 		return retval;
 	}
 	else throw EXC_CANT_CONTAIN;
-	return nullptr;
 }
 
 template <class T> void Container <T> ::Show(bool direction) const {
@@ -242,7 +238,6 @@ template <class T> T& Container<T> ::operator [](size_t i) const {
 	size_t iter = 0;
 	if (i >= count) {
 		throw EXC_CANT_CONTAIN;
-		return nullptr;
 	}
 	data *temp = first;
 	while (iter != i) {

@@ -1,7 +1,6 @@
 #include "background.h"
 
-Background::Background(HDC &hdc, HWND hwnd) : Drawable(2, hdc)
-{
+Background::Background(HDC &hdc, HWND hwnd) : Drawable(2, hdc) {
 	brush = RGB(0,0,0);
 	baseBrush = CreateSolidBrush(brush);
 	hwnd_i = hwnd;

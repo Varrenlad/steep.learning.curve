@@ -12,7 +12,7 @@ int main() {
 	Container<Drawable> objects;
 	HWND hwnd = GetConsoleWindow();
 	HDC hdc = GetDC(hwnd);
-	unsigned int i;
+	size_t i;
 	while (true) {
 		std::cin >> filename;
 		ifstr.open(filename, std::ifstream::in);
@@ -23,39 +23,8 @@ int main() {
 		else break;
 	}
 	getchar();
-#ifdef LEGACY_LOAD
-	Background *bg = new Background(hdc, hwnd);
-	ifstr >> type;
-	objects.Push(bg);
-	switch (type) {
-	case 1: {	
-	ContourTrapezoid *t = new ContourTrapezoid(hdc, hwnd);
-	objects.Push(t);
-	break; 
-	}
-	case 2: {
-	FilledTrapezoid *t = new FilledTrapezoid(hdc, hwnd);
-	objects.Push(t);
-	break; 
-	}
-	case 3:	{
-	PartialTrapezoid *t = new PartialTrapezoid(hdc, hwnd);
-	objects.Push(t);
-	break; 
-	}
-	default:
-		TextOutA(hdc, 0, 0, "Couldn't find type specializer, aborting", 41);
-		getchar();
-		exit(-1);
-	}
-	for (i = 0; i < objects.Size(); ++i) {
-#endif
 		try {
-#ifndef LEGACY_LOAD
 			objects.Load(ifstr, hdc, hwnd);
-#else
-			objects[i].Setter(ifstr);
-#endif
 		}
 		catch (int e) {
 			switch (e) {
@@ -78,9 +47,6 @@ int main() {
 			getchar();
 			exit(-1);
 		}
-#ifdef LEGACY_LOAD
-	}
-#endif
 	ifstr.sync();
 	ifstr.close();
 	draw(objects, hdc);
@@ -99,14 +65,6 @@ int main() {
 		}
 	}
 	ofstr.close();
-	RECT rt;
-	GetClientRect(hwnd, &rt);
-	/*HDC hdcMeta = CreateEnhMetaFile(hdc, "name.emf", &rt, NULL);
-	for (i = 0; i < objects.Size(); ++i) {
-		objects[i].ModifyDC(hdcMeta);
-		objects.Draw(i);
-	}
-	DeleteEnhMetaFile(CloseEnhMetaFile(hdcMeta));*/
 	return 0;
 }
 
@@ -133,8 +91,26 @@ void draw(Container<Drawable> &objects, HDC hdc) {
 				}
 			}
 		c = _getch();
+
+		if (c == 'r') {
+			float f;
+			std::cout << "Input angle to rotate" << std::endl;
+			std::cin >> f;
+			for (i = 0; i < objects.Size(); ++i) {
+				objects[i].Rotate(f);
+			}
+		}
+		if (c == 'z') {
+			float f;
+			std::cout << "Input size modificator" << std::endl;
+			std::cin >> f;
+			for (i = 0; i < objects.Size(); ++i) {
+				objects[i].Resize(f);
+			}
+		}
 		if (c == 'd')
 			show_debugging_info = !show_debugging_info;
+
 		if (c == 0 || c == 224) {
 			c = _getch();
 			for (i = 0; i < objects.Size(); ++i) {

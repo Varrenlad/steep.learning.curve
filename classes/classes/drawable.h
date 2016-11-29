@@ -5,6 +5,11 @@
 class Drawable {
 public:
 	Drawable(int input, HDC hdc_i);
+
+	virtual void Rotate(float angle); //Track
+	virtual void Resize(float newsize); //Way
+	virtual void ToEMF(std::string &filename);
+	
 	virtual char GetType() const = 0;
 	virtual void Draw() = 0;
 	virtual void Setter(std::istream &st) = 0;
