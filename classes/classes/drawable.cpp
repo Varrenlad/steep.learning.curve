@@ -35,40 +35,33 @@ void Drawable::ToEMF(std::string &filename) {
 	hdc = temp;
 }
 
-void Drawable::Resize(float new_size) { //resize needs accuracy gix
+void Drawable::Resize(float new_size) {//switch to matrix of transformation; urgent
 	size_t i;
 	if (new_size < 0)
 		throw EXC_CANT_CONTAIN;
-	for (i = 0; i < count_of_p; ++i) {
-		points[i].x *= new_size;
-		points[i].y *= new_size;
+	if (count_of_p == 4) {
+		points[0].x *= new_size;
+		points[0].y *= new_size;
+		points[2].y *= new_size;
+		points[3].x *= new_size;
+		points[3].y *= new_size;
+	}
+	else {
+		points[1].x *= new_size;
+		points[1].y *= new_size;
 	}
 }
 
-void Drawable::Rotate(float an) { //rotation needs accuracy fix 
+void Drawable::Rotate(float an) { //this is fine. No fix pending 
 	size_t i;
-	double angle = an/57.3, temp = angle, x, y;
+	double angle = an/57.3, x, y;
 	POINT def_centre;
-	POINT line[2];
-	if (count_of_p == 4) {
-		float a = abs(points[1].x + points[0].x);
-		float h = abs(points[2].y + points[0].y);
-		def_centre.x = a / 2;
-		def_centre.y = h / 2;
-	}
-	else { //rectangle
-		def_centre.x = (points[0].x + points[1].x) / 2;
-		def_centre.y = (points[0].y + points[1].y) / 2;
-	}
+	def_centre.x = points[0].x;
+	def_centre.y = points[0].y;
 	for (i = 0; i < count_of_p; ++i) {
-		x = points[i].x;
-		y = points[i].y;
-		//while (angle > 0) {
-			x = def_centre.x + (x - def_centre.x) * std::cos(angle) + (y - def_centre.y) * std::sin(angle);
-			y = def_centre.y + (y - def_centre.y) * std::cos(angle) - (x - def_centre.x) * std::sin(angle);
-			//angle -= (rot > 0) ? 0.1 : -0.1;
-		//}
-		points[i].x = round(x);
-		points[i].y = round(y);
+		x = def_centre.x + (points[i].x - def_centre.x) * std::cos(angle) - (points[i].y - def_centre.y) * std::sin(angle);
+		y = def_centre.y + (points[i].y - def_centre.y) * std::cos(angle) + (points[i].x - def_centre.x) * std::sin(angle);
+		points[i].x = x;
+		points[i].y = y;
 	}
 }

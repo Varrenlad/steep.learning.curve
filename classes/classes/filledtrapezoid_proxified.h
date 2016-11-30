@@ -18,5 +18,11 @@ class FilledTrapezoid_Proxy {
 	void SaveP(std::ostream &st) const {
 		return proxified.SaveP(st);
 	}
+	void Resize(float new_size) {
+		proxified.Resize(new_size);
+	}
+	void Rotate(float angle) {
+		proxified.Rotate(angle);
+	}
 	FilledTrapezoid& proxified;
 };
