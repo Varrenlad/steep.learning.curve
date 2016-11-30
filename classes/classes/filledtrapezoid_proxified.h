@@ -18,8 +18,8 @@ class FilledTrapezoid_Proxy {
 	void SaveP(std::ostream &st) const {
 		return proxified.SaveP(st);
 	}
-	void Resize(float new_size) {
-		proxified.Resize(new_size);
+	void Resize(float new_size_x, float new_size_y) {
+		proxified.Resize(new_size_x, new_size_y);
 	}
 	void Rotate(float angle) {
 		proxified.Rotate(angle);

@@ -23,6 +23,7 @@
 #include <windowsx.h>
 #include <cstdlib>
 #include <cstdarg>
+#include <string>
 
 struct list {
 	int i;

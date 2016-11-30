@@ -7,8 +7,7 @@ public:
 	Drawable(int input, HDC hdc_i);
 
 	virtual void Rotate(float angle); //Track
-	virtual void Resize(float newsize); //Way
-	virtual void ToEMF(std::string &filename);
+	virtual void Resize(float new_size_x, float new_size_y); //Way
 	
 	virtual char GetType() const = 0;
 	virtual void Draw() = 0;

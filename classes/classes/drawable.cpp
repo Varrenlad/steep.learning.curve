@@ -21,34 +21,25 @@ void Drawable::ModifyDC(HDC &new_dc) {
 	hdc = new_dc;
 }
 
-void Drawable::ToEMF(std::string &filename) {
-	HDC temp = hdc;
-	HWND hwnd = GetConsoleWindow();
-	RECT rt;
-	GetClientRect(hwnd, &rt);
-	if (!filename.size())
-		throw EXC_WR_FAIL;
-	filename.append(".emf");
-	HDC hdcMeta = CreateEnhMetaFile(hdc, filename.c_str(), &rt, NULL);
-	this->Draw();
-	DeleteEnhMetaFile(CloseEnhMetaFile(hdcMeta));
-	hdc = temp;
-}
-
-void Drawable::Resize(float new_size) {//switch to matrix of transformation; urgent
+void Drawable::Resize(float new_size_x, float new_size_y) {//switch to matrix of transformation; urgent
 	size_t i;
-	if (new_size < 0)
-		throw EXC_CANT_CONTAIN;
+	double x, y;
+	POINT def_centre;
 	if (count_of_p == 4) {
-		points[0].x *= new_size;
-		points[0].y *= new_size;
-		points[2].y *= new_size;
-		points[3].x *= new_size;
-		points[3].y *= new_size;
+		def_centre.x = points[1].x; //take top-left point of trapezoid
+		def_centre.y = points[1].y;
 	}
 	else {
-		points[1].x *= new_size;
-		points[1].y *= new_size;
+		def_centre.x = points[0].x;
+		def_centre.y = points[0].y;
+	}
+	if (!new_size_x || !new_size_y)
+		throw EXC_CANT_CONTAIN;
+	for (i = 0; i < count_of_p; ++i) {
+		x = def_centre.x + (points[i].x - def_centre.x) * new_size_x;
+		y = def_centre.y + (points[i].y - def_centre.y) * new_size_y;
+		points[i].x = x;
+		points[i].y = y;
 	}
 }
 

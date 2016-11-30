@@ -72,8 +72,7 @@ void draw(Container<Drawable> &objects, HDC hdc) {
 	bool show_debugging_info = 0;
 	unsigned int c, i;
 	do {
-		if (show_debugging_info)
-			system("cls");
+		system("cls");
 		for (i = 0; i < objects.Size(); ++i) {
 			try {
 				if (show_debugging_info) {
@@ -91,7 +90,7 @@ void draw(Container<Drawable> &objects, HDC hdc) {
 				}
 			}
 		c = _getch();
-
+		///Rotates all objects by theta
 		if (c == 'r') {
 			float f;
 			std::cout << "Input angle to rotate" << std::endl;
@@ -100,17 +99,39 @@ void draw(Container<Drawable> &objects, HDC hdc) {
 				objects[i].Rotate(f);
 			}
 		}
+		///Resizes all objects by x, y
 		if (c == 'z') {
-			float f;
-			std::cout << "Input size modificator" << std::endl;
-			std::cin >> f;
+			float f, f1;
+			std::cout << "Input size modificators, x then y" << std::endl;
+			std::cin >> f >> f1;
 			for (i = 0; i < objects.Size(); ++i) {
-				objects[i].Resize(f);
+				objects[i].Resize(f, f1);
 			}
 		}
+		///Saves container data to EMF file
+		//Might be moved to container method
+		if (c == 'e') {
+			HWND hwnd = GetConsoleWindow();
+			RECT rt;
+			std::string s;
+			GetClientRect(hwnd, &rt);
+			TextOutA(hdc, 0, 40, "Input file name to save", 24);
+			std::cin >> s;
+			if (s.size() == 0 || s.size() > FILENAME_MAX)
+				continue;
+			s.append(".emf");
+			HDC hdcMeta = CreateEnhMetaFile(hdc, s.c_str(), &rt, NULL);
+			for (i = 0; i < objects.Size(); ++i) {
+				objects[i].ModifyDC(hdcMeta);
+				objects[i].Draw();
+				objects[i].ModifyDC(hdc);
+			}
+			DeleteEnhMetaFile(CloseEnhMetaFile(hdcMeta));
+		}
+		///Prints get-functions output into cout
 		if (c == 'd')
 			show_debugging_info = !show_debugging_info;
-
+		///Move-loop
 		if (c == 0 || c == 224) {
 			c = _getch();
 			for (i = 0; i < objects.Size(); ++i) {

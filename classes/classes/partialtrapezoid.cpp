@@ -81,16 +81,21 @@ void PartialTrapezoid::Move(int x, int y) {
 	inner->Move(x, y);
 }
 
-void PartialTrapezoid::Resize(float new_size) {
+void PartialTrapezoid::Resize(float new_size_x, float new_size_y) {
 	size_t i;
-	if (new_size < 0)
+	double x, y;
+	POINT def_centre;
+	def_centre.x = points[0].x;
+	def_centre.y = points[0].y;
+	if (!new_size_x || !new_size_y)
 		throw EXC_CANT_CONTAIN;
-	points[0].x *= new_size;
-	points[0].y *= new_size;
-	points[2].y *= new_size;
-	points[3].x *= new_size;
-	points[3].y *= new_size;
-	proxy->Resize(new_size);
+	for (i = 0; i < count_of_p; ++i) {
+		x = def_centre.x + std::abs(points[i].x - def_centre.x) * new_size_x;
+		y = def_centre.y + std::abs(points[i].y - def_centre.y) * new_size_y;
+		points[i].x = x;
+		points[i].y = y;
+	}
+	proxy->Resize(new_size_x, new_size_y);
 }
 
 void PartialTrapezoid::Rotate(float an) {
