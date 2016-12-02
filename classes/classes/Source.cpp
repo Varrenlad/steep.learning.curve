@@ -6,7 +6,7 @@
 void draw(Container<Drawable> &objects, HDC hdc);
 
 int main() {
-	char filename[FILENAME_MAX];
+	std::string filename;
 	std::ifstream ifstr;
 	std::ofstream ofstr;
 	Container<Drawable> objects;
@@ -51,9 +51,9 @@ int main() {
 	ifstr.close();
 	draw(objects, hdc);
 	ofstr.open(filename, std::ofstream::out);
-	TextOutA(hdc, 0, 0, "Do you want to save current data? Y/n\n", 39);
+	TextOutA(hdc, 0, 0, "Do you want to save current data? y/N\n", 39);
 	i = getchar();
-	if (i != 'n' || i != 'N') {
+	if (i == 'y' || i == 'Y') {
 		try {
 			objects.Save(ofstr);
 		}
@@ -109,24 +109,13 @@ void draw(Container<Drawable> &objects, HDC hdc) {
 			}
 		}
 		///Saves container data to EMF file
-		//Might be moved to container method
 		if (c == 'e') {
-			HWND hwnd = GetConsoleWindow();
-			RECT rt;
-			std::string s;
-			GetClientRect(hwnd, &rt);
 			TextOutA(hdc, 0, 40, "Input file name to save", 24);
+			std::string s;
 			std::cin >> s;
-			if (s.size() == 0 || s.size() > FILENAME_MAX)
-				continue;
-			s.append(".emf");
-			HDC hdcMeta = CreateEnhMetaFile(hdc, s.c_str(), &rt, NULL);
-			for (i = 0; i < objects.Size(); ++i) {
-				objects[i].ModifyDC(hdcMeta);
-				objects[i].Draw();
-				objects[i].ModifyDC(hdc);
-			}
-			DeleteEnhMetaFile(CloseEnhMetaFile(hdcMeta));
+			if (!objects.ToEMF(s, hdc))
+				TextOutA(hdc, 0, 40, "Successfully saved to file", 27);
+			else TextOutA(hdc, 0, 40, "Couldn't save to file", 22);
 		}
 		///Prints get-functions output into cout
 		if (c == 'd')
@@ -135,7 +124,7 @@ void draw(Container<Drawable> &objects, HDC hdc) {
 		if (c == 0 || c == 224) {
 			c = _getch();
 			for (i = 0; i < objects.Size(); ++i) {
-				if (objects[i].GetType() != 'b')
+				if (objects[i].GetType() != 'b') //we can modify Background, it updates points on draw, but we shouldn't
 				switch (c) {
 				case 72:
 					objects[i].Move(0, -10);

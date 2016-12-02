@@ -2,6 +2,7 @@
 #include "commondata.h"
 #include "filledtrapezoid.h"
 
+///Proxy allowes us to keep sanity and disallow use of private 
 class FilledTrapezoid_Proxy {
 	friend class PartialTrapezoid;
 	explicit FilledTrapezoid_Proxy(FilledTrapezoid &to_proxify) :

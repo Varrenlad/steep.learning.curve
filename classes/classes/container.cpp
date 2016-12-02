@@ -88,6 +88,8 @@ template <class T> void Container <T> ::Load(std::ifstream &st, HDC hdc, HWND hw
 template <> void Container <Drawable> ::Load(std::ifstream &st, HDC hdc, HWND hwnd) {
 	size_t i;
 	Drawable *obj;
+	if (st.rdstate() & std::ios::badbit)
+		throw EXC_RD_ERR;
 	st >> i;
 	st.get();
 	char *type = new char[i + 1];
@@ -261,6 +263,25 @@ template <class T> void Container <T> ::Draw(size_t i) const {
 
 template <class T> size_t Container<T> ::Size() const {
 	return count;
+}
+
+template <class T> bool Container<T> ::ToEMF(std::string &filename, HDC curDC) const {
+	HWND hwnd = GetConsoleWindow();
+	RECT rt;
+	size_t i;
+	GetClientRect(hwnd, &rt);
+	if (filename.size() == 0 || filename.size() > FILENAME_MAX - 4)
+		return true;
+	if (filename.size() < 5 || !filename.compare(filename.size() - 4, 4, "emf"))
+		filename.append(".emf");
+	HDC hdcMeta = CreateEnhMetaFile(curDC, filename.c_str(), &rt, NULL);
+	for (i = 0; i < count; ++i) {
+		(*this)[i].ModifyDC(hdcMeta);
+		(*this)[i].Draw();
+		(*this)[i].ModifyDC(curDC);
+	}
+	DeleteEnhMetaFile(CloseEnhMetaFile(hdcMeta));
+	return false;
 }
 
 template class Container<Drawable>;

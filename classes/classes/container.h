@@ -30,6 +30,7 @@ public:
 	T* PopRem();
 	void Show(bool direction) const;
 	void Draw(size_t i) const;
+	bool ToEMF(std::string &filename, HDC curDC) const;
 	~Container();
 };
 #include "container.cpp"

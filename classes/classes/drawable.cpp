@@ -18,7 +18,7 @@ Drawable::~Drawable() {
 }
 
 void Drawable::ModifyDC(HDC &new_dc) {
-	hdc = new_dc;
+	hdc = new_dc; //must be allowed to call from outside to EMF export
 }
 
 void Drawable::Resize(float new_size_x, float new_size_y) {//switch to matrix of transformation; urgent
@@ -30,14 +30,14 @@ void Drawable::Resize(float new_size_x, float new_size_y) {//switch to matrix of
 		def_centre.y = points[1].y;
 	}
 	else {
-		def_centre.x = points[0].x;
+		def_centre.x = points[0].x; //or top-left of rectangle
 		def_centre.y = points[0].y;
 	}
 	if (!new_size_x || !new_size_y)
 		throw EXC_CANT_CONTAIN;
 	for (i = 0; i < count_of_p; ++i) {
-		x = def_centre.x + (points[i].x - def_centre.x) * new_size_x;
-		y = def_centre.y + (points[i].y - def_centre.y) * new_size_y;
+		x = def_centre.x + (points[i].x - def_centre.x) * new_size_x; //we move point to (0;0), then resize it with (0, new_x; new_y, 0) matrix \		
+		y = def_centre.y + (points[i].y - def_centre.y) * new_size_y; //and then put it back to (x;y)
 		points[i].x = x;
 		points[i].y = y;
 	}
@@ -45,7 +45,7 @@ void Drawable::Resize(float new_size_x, float new_size_y) {//switch to matrix of
 
 void Drawable::Rotate(float an) { //this is fine. No fix pending 
 	size_t i;
-	double angle = an/57.3, x, y;
+	double angle = an/57.3, x, y; //angle is approximate deg to rad conversion
 	POINT def_centre;
 	def_centre.x = points[0].x;
 	def_centre.y = points[0].y;

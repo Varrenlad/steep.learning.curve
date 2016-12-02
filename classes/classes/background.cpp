@@ -65,5 +65,5 @@ char Background::GetType() const {
 }
 
 void Background::Move(int x, int y) {
-	throw EXC_BG_VL_WRONG;
+	throw EXC_BG_VL_WRONG; //no sence in moving background, though we need it for the sake of architecture
 }
