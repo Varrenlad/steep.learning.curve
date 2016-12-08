@@ -119,28 +119,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="background.cpp" />
     <ClCompile Include="container.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="contourtrapezoid.cpp" />
     <ClCompile Include="drawable.cpp" />
-    <ClCompile Include="filled.cpp" />
-    <ClCompile Include="filledtrapezoid.cpp" />
-    <ClCompile Include="partialtrapezoid.cpp" />
+    <ClCompile Include="trapezoid.cpp" />
+    <ClCompile Include="rectangle.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="background.h" />
     <ClInclude Include="commondata.h" />
     <ClInclude Include="container.h" />
-    <ClInclude Include="contourtrapezoid.h" />
     <ClInclude Include="drawable.h" />
-    <ClInclude Include="filled.h" />
-    <ClInclude Include="filledtrapezoid.h" />
-    <ClInclude Include="filledtrapezoid_proxified.h" />
-    <ClInclude Include="partialtrapezoid.h" />
+    <ClInclude Include="trapezoid.h" />
+    <ClInclude Include="rectangle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

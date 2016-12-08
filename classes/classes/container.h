@@ -1,9 +1,7 @@
 #ifndef CNTR
 #define CNTR
-#include "background.h"
-#include "filledtrapezoid.h"
-#include "contourtrapezoid.h"
-#include "partialtrapezoid.h"
+#include "trapezoid.h"
+#include "rectangle.h"
 
 template <class T> class Container {
 	struct data {
@@ -21,15 +19,10 @@ public:
 	T& operator [](size_t i) const;
 	void Save(std::ofstream &st) const;
 	void Load(std::ifstream &st, HDC hdc, HWND hwnd);
-	void FrontPush(T *obj);
 	void Push(T *obj);
 	size_t Size() const;
-	list *Search(POINT p);
-	list *Search(COLORREF c);
-	T& Pop();
-	T* PopRem();
+	T* Pop();
 	void Show(bool direction) const;
-	void Draw(size_t i) const;
 	~Container();
 };
 #include "container.cpp"
