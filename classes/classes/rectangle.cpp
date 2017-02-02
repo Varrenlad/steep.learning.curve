@@ -73,6 +73,9 @@ void _Rectangle::LoadP(std::istream &st) const {
 	if (points[0].x > points[1].x ||
 		points[0].y > points[1].y)
 		throw EXC_WRONG_POINTS_R;
+	if (std::abs(points[0].x - points[1].x) !=
+		std::abs(points[0].y - points[1].y))
+		throw EXC_WRONG_POINTS_R;
 }
 
 bool _Rectangle::LoadC(COLORREF *cl, std::istream &st) {
@@ -84,4 +87,48 @@ bool _Rectangle::LoadC(COLORREF *cl, std::istream &st) {
 		return true;
 	*cl = RGB(r, g, b);
 	return false;
+}
+
+void _Rectangle::CLoad(std::istream &st) {
+	char c;
+	//load types
+	st >> pen_type >> pen_width >> brush_type;
+	//load colours
+	do {
+		this->LoadC(&pen, st);
+		this->LoadC(&brush, st);
+		//show colours
+		TextOutA(hdc, 0, 0, "Are the colours correct? Y\n; Pen, brush", 40);
+		SelectBrush(hdc, pen);
+		Rectangle(hdc, 50, 20, 60, 30);
+		SelectBrush(hdc, brush);
+		Rectangle(hdc, 60, 20, 70, 30); c;
+		std::cin >> c;
+		if (c != 'n' || c != 'N')
+			c = 0;
+	} while (c);
+	//for each load and draw line
+	for (size_t i = 0; i < count_of_p; ++i) {
+		st >> (points)[i].x >> (points)[i].y;
+		for (size_t i = 0; i < count_of_p; ++i) {
+			Ellipse(hdc, points[i].x - pen_width, points[i].y - pen_width,
+				points[i].x + pen_width, points[i].y + pen_width);
+		}
+		TextOutA(hdc, 0, 0, "Is the position correct? Y\n", 30);
+		std::cin >> c;
+		if (c == 'n' || c == 'N')
+			--i;
+		InvalidateRect(NULL, NULL, TRUE);
+		Sleep(50);
+	}
+	//data verification
+	if (points[0].x > points[1].x ||
+		points[0].y > points[1].y)
+		throw EXC_WRONG_POINTS_R;
+	if (std::abs(points[0].x - points[1].x) !=
+		std::abs(points[0].y - points[1].y))
+		throw EXC_WRONG_POINTS_R;
+	//remove all our helpers
+	InvalidateRect(NULL, NULL, TRUE);
+	Sleep(50);
 }

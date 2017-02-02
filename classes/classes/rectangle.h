@@ -6,6 +6,7 @@ public:
 	_Rectangle(HDC &hdc_g, HWND &hwnd_g);
 	void Draw();
 	void Load(std::istream &st);
+	void CLoad(std::istream &st);
 	void Save(std::ostream &st);
 	char GetType() const;
 	~_Rectangle();

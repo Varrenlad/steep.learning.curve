@@ -98,3 +98,52 @@ bool Trapezoid::LoadC(COLORREF *cl, std::istream &st) {
 	*cl = RGB(r, g, b);
 	return false;
 }
+
+void Trapezoid::CLoad(std::istream &st) {
+	char c;
+	//load types
+	st >> pen_type >> pen_width >> brush_type;
+	//load colours
+	do {
+		this->LoadC(&pen, st);
+		this->LoadC(&brush, st);
+		//show colours
+		TextOutA(hdc, 0, 0, "Are the colours correct? Y\n; Pen, brush", 40);
+		SelectBrush(hdc, pen);
+		Rectangle(hdc, 80, 20, 100, 40);
+		SelectBrush(hdc, brush);
+		Rectangle(hdc, 110, 20, 140, 40); c;
+		std::cin >> c;
+		if (c != 'n' || c != 'N')
+			c = 0;
+	} while (c);
+	//for each load and draw line
+	for (size_t i = 0; i < count_of_p; ++i) {
+		st >> (points)[i].x >> (points)[i].y;
+		if (count_of_p > 1)
+			Polyline(hdc, points, count_of_p);
+		else Ellipse(hdc, points[0].x - pen_width, points[0].y - pen_width,
+			points[0].x + pen_width, points[0].y + pen_width);
+		TextOutA(hdc, 0, 0, "Is the position correct? Y\n", 30);
+		std::cin >> c;
+		if (c == 'n' || c == 'N')
+			--i;
+		InvalidateRect(NULL, NULL, TRUE);
+		Sleep(50);
+	}
+	//data verification
+	if (((points)[2].y - (points)[3].y) &&
+		((points)[0].y - (points)[1].y)) {
+		if (((points)[2].x - (points)[3].x) /
+			((points)[2].y - (points)[3].y) !=
+			((points)[0].x - (points)[1].x) /
+			((points)[0].y - (points)[1].y))
+			throw EXC_WRONG_POINTS_T;
+	}
+	else if ((points)[2].y - (points)[3].y !=
+		(points)[0].y - (points)[1].y)
+		throw EXC_WRONG_POINTS_T;
+	//remove all our helpers
+	InvalidateRect(NULL, NULL, TRUE);
+	Sleep(50);
+}

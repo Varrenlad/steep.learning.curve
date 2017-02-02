@@ -8,6 +8,7 @@ public:
 	~Trapezoid();
 	void Draw();
 	void Load(std::istream &st);
+	void CLoad(std::istream &st);
 	void Save(std::ostream &st);
 	char GetType() const;
 private:

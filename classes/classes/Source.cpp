@@ -8,28 +8,7 @@ int main() {
 	Container<Drawable> objects;
 	HWND hwnd = GetConsoleWindow();
 	HDC hdc = GetDC(hwnd);
-	size_t i;/*
-	while (true) {
-		std::cin >> filename;
-		ifstr.open(filename, std::ifstream::in);
-		if (ifstr.rdstate() & std::ios::failbit) {
-			TextOutA(hdc, 0, 0, "Couldn't find file, aborting", 29);
-			getchar();
-		}
-		else break;
-	}
-	getchar();
-		try {
-			objects.Load(ifstr, hdc, hwnd);
-		}
-		catch (int e) {
-			TextOutA(hdc, 0, 0, "Unknown error while loading", 28);
-			std::cout << e;
-			getchar();
-			exit(-1);
-		}
-	ifstr.sync();
-	ifstr.close();*/
+	size_t i;
 	draw(objects, hdc, hwnd);
 	TextOutA(hdc, 0, 0, "Do you want to save current data? Y/n\n", 39);
 	i = getchar();
@@ -82,11 +61,12 @@ void draw(Container<Drawable> &objects, HDC hdc, HWND hwnd) {
 			switch (t) {
 			case 't': {
 				obj = new Trapezoid(hdc, hwnd);
-				std::cout << "Syntax: pen colour (3 int)" << std::endl
-					<< "Brush colour (3 int)" << std::endl
+				std::cout << "Syntax: pen width and style, brush style\n"
+					<< "Pen colour (3 int)\n"
+					<< "Brush colour (3 int)\n"
 					<< "Point x, y (4 times)" << std::endl;
 				try {
-					obj->Load(std::cin);
+					obj->CLoad(std::cin);
 				}
 				catch (int e) {
 					isFine = 0;
@@ -97,11 +77,12 @@ void draw(Container<Drawable> &objects, HDC hdc, HWND hwnd) {
 			}
 			case 'r': {
 				obj = new _Rectangle(hdc, hwnd);
-				std::cout << "Syntax: pen colour (3 int)" << std::endl
-					<< "Brush colour (3 int)" << std::endl
+				std::cout << "Syntax: pen width and style, brush style\n"
+					<< "Pen colour (3 int)\n"
+					<< "Brush colour (3 int)\n"
 					<< "Point x, y (2 times)" << std::endl;
 				try {
-					obj->Load(std::cin);
+					obj->CLoad(std::cin);
 				}
 				catch (int e) {
 					isFine = 0;
